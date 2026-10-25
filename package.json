@@ -1,0 +1,16 @@
+{
+  "name": "hhhoj-frontend-better",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "serve": "node scripts/serve.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.10",
+    "typescript": "^5.8.3"
+  }
+}

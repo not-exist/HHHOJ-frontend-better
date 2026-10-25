@@ -1,0 +1,267 @@
+/* ============================================================
+ * theme-oklch — Twilight (Spr-Aachen) OKLCH 色彩体系移植
+ * 变量值对照 src/styles/variables.styl；语义色（成功/危险/分数色）
+ * 不参与色相派生。html.hfb-dark 为深色套，成对定义。
+ * ============================================================ */
+
+:root {
+  --hue: 255;
+  --radius-large: 1rem;
+
+  --primary: oklch(0.70 0.14 var(--hue));
+  --primary-hover: oklch(0.64 0.14 var(--hue));
+  --primary-active: oklch(0.58 0.13 var(--hue));
+  --on-primary: #fff;
+
+  --page-bg: oklch(0.95 0.01 var(--hue));
+  --card-bg: #fff;
+  --text-main: oklch(0.25 0.02 var(--hue));
+  --text-soft: rgba(0, 0, 0, 0.6);
+  --text-faint: rgba(0, 0, 0, 0.4);
+
+  --line-divider: rgba(0, 0, 0, 0.08);
+  --line-color: rgba(0, 0, 0, 0.12);
+
+  --link: oklch(0.55 0.13 var(--hue));
+  --link-hover: oklch(0.48 0.13 var(--hue));
+  --link-underline: oklch(0.93 0.04 var(--hue));
+
+  --input-bg: #fff;
+
+  --btn-bg: oklch(0.95 0.025 var(--hue));
+  --btn-bg-hover: oklch(0.90 0.05 var(--hue));
+  --btn-bg-active: oklch(0.85 0.08 var(--hue));
+  --btn-content: oklch(0.55 0.12 var(--hue));
+
+  --codeblock-bg: oklch(0.96 0.015 var(--hue));
+  --inline-code-bg: oklch(0.95 0.025 var(--hue));
+  --inline-code-color: oklch(0.50 0.12 var(--hue));
+
+  --selection-bg: oklch(0.90 0.05 var(--hue));
+  --scrollbar-thumb: rgba(0, 0, 0, 0.35);
+}
+
+html.hfb-dark {
+  color-scheme: dark;
+  --primary: oklch(0.75 0.14 var(--hue));
+  --primary-hover: oklch(0.80 0.14 var(--hue));
+  --primary-active: oklch(0.70 0.13 var(--hue));
+
+  --page-bg: oklch(0.16 0.014 var(--hue));
+  --card-bg: oklch(0.23 0.015 var(--hue));
+  --text-main: rgba(255, 255, 255, 0.87);
+  --text-soft: rgba(255, 255, 255, 0.6);
+  --text-faint: rgba(255, 255, 255, 0.4);
+
+  --line-divider: rgba(255, 255, 255, 0.08);
+  --line-color: rgba(255, 255, 255, 0.12);
+
+  --link: oklch(0.78 0.11 var(--hue));
+  --link-hover: oklch(0.84 0.12 var(--hue));
+  --link-underline: oklch(0.40 0.08 var(--hue));
+
+  --input-bg: oklch(0.28 0.02 var(--hue));
+
+  --btn-bg: oklch(0.33 0.035 var(--hue));
+  --btn-bg-hover: oklch(0.38 0.04 var(--hue));
+  --btn-bg-active: oklch(0.43 0.045 var(--hue));
+  --btn-content: oklch(0.75 0.10 var(--hue));
+
+  --codeblock-bg: oklch(0.18 0.015 var(--hue));
+  --inline-code-bg: oklch(0.33 0.035 var(--hue));
+  --inline-code-color: oklch(0.80 0.10 var(--hue));
+
+  --selection-bg: oklch(0.40 0.08 var(--hue));
+  --scrollbar-thumb: rgba(255, 255, 255, 0.35);
+}
+
+/* —— 主题切换保护（Twilight is-theme-transitioning）—— */
+html.hfb-theme-transitioning,
+html.hfb-theme-transitioning *,
+html.hfb-theme-transitioning *::before,
+html.hfb-theme-transitioning *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* —— 页面与文字 —— */
+body {
+  background: var(--page-bg);
+  color: var(--text-main);
+  transition: background-color 0.6s ease, color 0.3s ease;
+}
+a { color: var(--link); }
+a:hover { color: var(--link-hover); }
+::selection { background: var(--selection-bg); }
+.text-muted { color: var(--text-faint) !important; }
+hr { border-color: var(--line-divider); }
+blockquote { border-left-color: var(--line-color); }
+input[type='checkbox'], input[type='radio'] { accent-color: var(--primary); }
+
+/* —— 卡片 —— */
+.card { background-color: var(--card-bg) !important; border-color: var(--line-divider); }
+.card-header { background-color: transparent; border-bottom: 1px solid var(--line-divider); color: var(--text-main); }
+.card-footer { background-color: transparent; border-top: 1px solid var(--line-divider); }
+
+/* —— 表格 —— */
+.table { color: inherit; }
+.table th, .table td { border-color: var(--line-divider); }
+.table thead th { border-bottom: 1px solid var(--line-divider); color: var(--text-soft); }
+.table-hover tbody tr:hover { background-color: color-mix(in srgb, var(--primary) 6%, transparent); }
+.table-striped tbody tr:nth-of-type(odd) { background-color: color-mix(in srgb, var(--primary) 4%, transparent); }
+.table-bordered, .table-bordered th, .table-bordered td { border-color: var(--line-divider); }
+article table { color: inherit; }
+html.hfb-dark .success, html.hfb-dark td.success { background-color: rgba(40, 167, 69, 0.22); color: var(--text-main); }
+html.hfb-dark .table-hover tbody tr:hover .success { background-color: rgba(40, 167, 69, 0.3); }
+
+/* —— 导航栏与导航 —— */
+.navbar {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html.hfb-dark .navbar.bg-light { background: transparent !important; }
+.navbar-light .navbar-brand, .navbar-light .navbar-nav .nav-link { color: var(--text-soft); }
+.navbar-light .navbar-brand:hover, .navbar-light .navbar-nav .nav-link:hover { color: var(--text-main); }
+.navbar-light .navbar-toggler { border-color: var(--line-color); }
+html.hfb-dark .navbar-toggler-icon { filter: invert(0.9) opacity(0.7); }
+
+.nav-pills .nav-link { color: var(--text-soft); }
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link { background: var(--primary); color: var(--on-primary); }
+.nav-tabs { border-bottom-color: var(--line-divider); }
+.nav-tabs .nav-link { color: var(--text-soft); border-color: transparent; }
+.nav-tabs .nav-link:hover { border-color: var(--line-divider) var(--line-divider) transparent; color: var(--text-main); }
+.nav-tabs .nav-link.active {
+  color: var(--primary);
+  background-color: transparent;
+  border-color: var(--line-divider) var(--line-divider) var(--card-bg);
+}
+
+/* —— 表单 —— */
+.form-control {
+  background-color: var(--input-bg);
+  border-color: var(--line-color);
+  color: var(--text-main);
+}
+.form-control:focus {
+  background-color: var(--input-bg);
+  border-color: var(--primary);
+  color: var(--text-main);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary) 25%, transparent);
+}
+.form-control::placeholder { color: var(--text-faint); opacity: 1; }
+select.form-control option { background-color: var(--card-bg); color: var(--text-main); }
+.input-group-text { background-color: var(--btn-bg); border-color: var(--line-color); color: var(--text-soft); }
+.custom-control-label::before { background-color: var(--input-bg); border-color: var(--line-color); }
+.custom-control-input:checked ~ .custom-control-label::before { background-color: var(--primary); border-color: var(--primary); }
+.custom-file-label { background-color: var(--input-bg); border-color: var(--line-color); color: var(--text-main); }
+
+/* —— 按钮 —— */
+.btn-primary { background-color: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.btn-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); color: var(--on-primary); }
+.btn-primary:not(:disabled):not(.disabled):active,
+.btn-primary:not(:disabled):not(.disabled).active { background-color: var(--primary-active); border-color: var(--primary-active); }
+.btn-primary:focus, .btn-primary.focus {
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary) 30%, transparent);
+}
+.btn-outline-primary { color: var(--primary); border-color: var(--primary); }
+.btn-outline-primary:hover { background-color: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.btn-secondary { background-color: var(--btn-bg); border-color: transparent; color: var(--btn-content); }
+.btn-secondary:hover { background-color: var(--btn-bg-hover); border-color: transparent; color: var(--btn-content); }
+.btn-secondary:not(:disabled):not(.disabled):active { background-color: var(--btn-bg-active); }
+.btn-link { color: var(--link); }
+.btn-link:hover { color: var(--link-hover); }
+.btn-outline-secondary { color: var(--text-soft); border-color: var(--line-color); }
+.btn-outline-secondary:hover { background-color: var(--btn-bg-hover); border-color: var(--line-color); color: var(--text-main); }
+html.hfb-dark .btn-outline-secondary { color: var(--text-soft); }
+html.hfb-dark .btn-outline-secondary:hover { color: var(--text-main); }
+html.hfb-dark .close { color: rgba(255, 255, 255, 0.85); text-shadow: none; }
+
+/* —— 杂项组件 —— */
+.badge-secondary { background-color: var(--btn-bg); color: var(--btn-content); }
+.dropdown-menu { background-color: var(--card-bg); border-color: var(--line-divider); }
+.dropdown-item { color: var(--text-soft); }
+.dropdown-item:hover, .dropdown-item:focus { background-color: var(--btn-bg-hover); color: var(--text-main); }
+.list-group-item { background-color: transparent; border-color: var(--line-divider); color: inherit; }
+.list-group-item-action:hover { background-color: var(--btn-bg-hover); color: var(--text-main); }
+.page-link { color: var(--link); background-color: transparent; border-color: var(--line-divider); }
+.page-item.active .page-link { background-color: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.page-item.disabled .page-link { color: var(--text-faint); background-color: transparent; border-color: var(--line-divider); }
+.img-thumbnail { background-color: transparent; border-color: var(--line-divider); }
+.uoj-footer { color: var(--text-soft); }
+.uoj-nav-busy { background: linear-gradient(90deg, var(--primary), oklch(0.82 0.14 var(--hue))); }
+.uoj-score { text-shadow: none; }
+
+/* —— 提示块（语义色，暗色下压暗底提亮字）—— */
+html.hfb-dark .alert-success { background-color: rgba(40, 167, 69, 0.16); border-color: rgba(40, 167, 69, 0.4); color: #9be3b0; }
+html.hfb-dark .alert-danger { background-color: rgba(220, 53, 69, 0.16); border-color: rgba(220, 53, 69, 0.4); color: #f0a8b0; }
+html.hfb-dark .alert-warning { background-color: rgba(255, 193, 7, 0.13); border-color: rgba(255, 193, 7, 0.35); color: #ffe08a; }
+html.hfb-dark .alert-info { background-color: rgba(23, 162, 184, 0.16); border-color: rgba(23, 162, 184, 0.4); color: #9adbe8; }
+html.hfb-dark .alert { color: inherit; }
+
+/* —— 模态框 —— */
+.modal-content { background-color: var(--card-bg); border-color: var(--line-divider); color: var(--text-main); }
+.modal-header, .modal-footer { border-color: var(--line-divider); }
+
+/* —— 代码 —— */
+pre { background-color: var(--codeblock-bg); color: var(--text-main); border: 1px solid var(--line-divider); }
+:not(pre) > code {
+  background-color: var(--inline-code-bg);
+  color: var(--inline-code-color);
+  padding: 0.1em 0.4em;
+  border-radius: 0.4em;
+  font-size: 90%;
+}
+pre code { background-color: transparent; color: inherit; padding: 0; }
+.code-container pre { border-radius: var(--radius-large); }
+
+/* highlight.js：浅色沿用站点自带主题，深色换 github-dark 色板 */
+html.hfb-dark .hljs { background: transparent; color: #c9d1d9; }
+html.hfb-dark .hljs-keyword, html.hfb-dark .hljs-selector-tag, html.hfb-dark .hljs-meta { color: #ff7b72; }
+html.hfb-dark .hljs-string, html.hfb-dark .hljs-regexp { color: #a5d6ff; }
+html.hfb-dark .hljs-comment { color: #8b949e; }
+html.hfb-dark .hljs-number, html.hfb-dark .hljs-literal { color: #79c0ff; }
+html.hfb-dark .hljs-title, html.hfb-dark .hljs-title.function_ { color: #d2a8ff; }
+html.hfb-dark .hljs-title.class_, html.hfb-dark .hljs-type { color: #ffa657; }
+html.hfb-dark .hljs-attr, html.hfb-dark .hljs-attribute { color: #79c0ff; }
+html.hfb-dark .hljs-built_in { color: #ffa657; }
+
+/* —— CodeMirror 6 —— */
+.cm-editor { background-color: var(--input-bg); color: var(--text-main); }
+html.hfb-dark .cm-editor { border-color: var(--line-color) !important; }
+.cm-gutters { background-color: transparent; border-right: 1px solid var(--line-divider); color: var(--text-faint); }
+.cm-activeLine { background-color: color-mix(in srgb, var(--primary) 6%, transparent); }
+.cm-activeLineGutter { background-color: color-mix(in srgb, var(--primary) 8%, transparent); }
+html.hfb-dark .cm-content { caret-color: var(--primary); }
+html.hfb-dark .cm-cursor { border-left-color: var(--primary); }
+html.hfb-dark .cm-selectionBackground { background-color: var(--selection-bg) !important; }
+
+/* —— 表单（Chrome autofill 在暗色下会强制黄底，压回去）—— */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text-main);
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* —— 表格行 hover 平滑过渡 —— */
+.table-hover tbody tr { transition: background-color 0.15s ease; }
+
+/* —— 等宽字体栈（代码块/行内码/提交语言列统一观感）—— */
+pre, code, kbd, samp {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+/* —— 滚动条（Twilight scrollbar 变量）—— */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none; }
+}

@@ -1,0 +1,50 @@
+/* ============================================================
+ * ambient-wallpaper — 全屏壁纸图层（Twilight banner.css / yaml:48-122）
+ * 交叉淡化 1200ms、Ken Burns 12s scale 1→1.2、卡片 72% 半透明 + 轻 blur。
+ * ============================================================ */
+
+#hfb-wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--page-bg);
+}
+
+#hfb-wallpaper .hfb-wp-slide {
+  position: absolute;
+  inset: -8%;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  transition-property: opacity;
+  transition-timing-function: ease-in-out;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+#hfb-wallpaper .hfb-wp-slide.active {
+  opacity: 1;
+  animation: hfb-ken-burns 12s linear forwards;
+}
+
+@keyframes hfb-ken-burns {
+  from { scale: 1; }
+  to { scale: 1.2; }
+}
+
+/* 壁纸模式下卡片半透明（Twilight wallpaper-transparent 工具类思路）。
+ * blur 只落在卡片元素本身（一个 filter 区域），不给表格单元格。 */
+html.hfb-wallpaper-on .card {
+  background-color: color-mix(in srgb, var(--card-bg) 72%, transparent);
+  backdrop-filter: blur(6px) saturate(160%);
+  -webkit-backdrop-filter: blur(6px) saturate(160%);
+}
+html.hfb-wallpaper-on .navbar.bg-light {
+  background: transparent !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #hfb-wallpaper .hfb-wp-slide { transition: none; }
+  #hfb-wallpaper .hfb-wp-slide.active { animation: none; }
+}

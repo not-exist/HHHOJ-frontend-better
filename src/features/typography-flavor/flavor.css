@@ -1,0 +1,59 @@
+/* ============================================================
+ * typography-flavor — 版式点睛（Twilight 卡片竖条 / 虚线下划线 /
+ * mask-composite 渐变描边，出处 anime.css:345-360）
+ * ============================================================ */
+
+/* —— 内容区 h3 前的主题色竖条 —— */
+html.hfb-flavor .uoj-content h3 {
+  position: relative;
+  padding-left: 0.8rem;
+}
+html.hfb-flavor .uoj-content h3::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.18em;
+  bottom: 0.18em;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--primary), oklch(0.60 0.16 var(--hue)));
+}
+
+/* —— 内容链接虚线下划线（导航/按钮/分页除外）—— */
+html.hfb-flavor .uoj-content a:not(.nav-link):not(.btn):not(.dropdown-item):not(.page-link) {
+  text-decoration: underline dashed;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--link-underline);
+}
+html.hfb-flavor .uoj-content a:not(.nav-link):not(.btn):not(.dropdown-item):not(.page-link):hover {
+  text-decoration-color: currentColor;
+}
+
+/* —— 卡片 hover 渐变描边（mask-composite 描一圈 1px 渐变边）—— */
+html.hfb-flavor .card { position: relative; }
+html.hfb-flavor .card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary) 45%, transparent),
+    transparent 40%,
+    transparent 60%,
+    color-mix(in srgb, var(--primary) 45%, transparent)
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+html.hfb-flavor .card:hover::after { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.hfb-flavor .card::after { transition: none; }
+}

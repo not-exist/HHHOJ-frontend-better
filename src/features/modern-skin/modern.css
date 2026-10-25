@@ -1,0 +1,332 @@
+/* ============================================================
+ * modern-skin — 现代皮肤（大面积重做，非逐组件适配）
+ * 设计语言：无框+细描边卡片、无边框表格（行分隔线）、填充式输入、
+ * 药丸徽章、分段标签页、下划线标签、悬浮微抬升、顶部主色氛围光。
+ * 全部引用 theme-oklch 变量，深浅两套自动适配。
+ * ============================================================ */
+
+/* —— 字体与版式基底 —— */
+html.hfb-modern body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  line-height: 1.65;
+  font-size: 1rem;
+  background-image: radial-gradient(
+    1100px 420px at 50% -180px,
+    color-mix(in srgb, var(--primary) 6%, transparent),
+    transparent 70%
+  );
+  background-repeat: no-repeat;
+}
+html.hfb-dark.hfb-modern body {
+  background-image: radial-gradient(
+    1100px 420px at 50% -180px,
+    color-mix(in srgb, var(--primary) 5%, transparent),
+    transparent 70%
+  );
+}
+html.hfb-modern h1 {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+html.hfb-modern h3 {
+  font-size: 1.08rem;
+  font-weight: 650;
+  margin-bottom: 0.8rem;
+}
+html.hfb-modern h5 {
+  font-size: 1.02rem;
+  font-weight: 650;
+}
+html.hfb-modern .uoj-content { padding-top: 0.4rem; }
+
+/* —— 卡片：去边框，细描边环 + 轻投影 —— */
+html.hfb-modern .card {
+  border: 0;
+  box-shadow: 0 0 0 1px var(--line-divider), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+html.hfb-dark.hfb-modern .card {
+  box-shadow: 0 0 0 1px var(--line-divider);
+}
+html.hfb-modern .card-header {
+  border-bottom: 0;
+  font-weight: 650;
+  padding-bottom: 0.25rem;
+}
+html.hfb-modern .card-body { padding: 1.25rem; }
+
+/* —— 表格：无边框、行分隔线、小字大写表头 —— */
+html.hfb-modern .table th,
+html.hfb-modern .table td {
+  border: 0;
+  border-bottom: 1px solid var(--line-divider);
+  padding: 0.68rem 0.75rem;
+  vertical-align: middle;
+}
+html.hfb-modern .table tbody tr:last-child th,
+html.hfb-modern .table tbody tr:last-child td { border-bottom: 0; }
+html.hfb-modern .table thead th {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding-top: 0.4rem;
+  padding-bottom: 0.55rem;
+}
+html.hfb-modern .table-bordered,
+html.hfb-modern .table-bordered th,
+html.hfb-modern .table-bordered td { border: 0; }
+/* uoj-theme 给 article 表格画的整框，换成行分隔线 */
+html.hfb-modern article table,
+html.hfb-modern article.table { border: 0; }
+html.hfb-modern article th,
+html.hfb-modern article td {
+  border: 0;
+  border-bottom: 1px solid var(--line-divider);
+}
+html.hfb-modern article thead th {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* —— 表单：填充式（浅色淡底、透明边），聚焦时亮边+光环 —— */
+html.hfb-modern .form-control,
+html.hfb-modern .custom-file-label {
+  background-color: var(--btn-bg);
+  border-color: transparent;
+  border-radius: 10px;
+  padding: 0.48rem 0.9rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+html.hfb-modern .form-control:focus {
+  background-color: var(--input-bg);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+html.hfb-modern select.form-control { appearance: auto; }
+html.hfb-modern textarea.form-control { border-radius: 12px; }
+
+/* —— 按钮：统一圆角与字重，悬浮微抬升 —— */
+html.hfb-modern .btn {
+  border-radius: 10px;
+  font-weight: 500;
+  padding: 0.42rem 1rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease,
+    color 0.15s ease, border-color 0.15s ease;
+}
+html.hfb-modern .btn-sm { border-radius: 8px; padding: 0.28rem 0.72rem; }
+html.hfb-modern .btn:hover { transform: translateY(-1px); }
+html.hfb-modern .btn:active { transform: none; }
+html.hfb-modern .btn-primary:hover {
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 40%, transparent);
+}
+html.hfb-modern .btn:focus,
+html.hfb-modern .btn:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);
+}
+html.hfb-modern .btn-link { text-decoration: none; }
+
+/* —— 徽章：软色药丸 —— */
+html.hfb-modern .badge {
+  border-radius: 999px;
+  padding: 0.32em 0.75em;
+  font-weight: 600;
+}
+html.hfb-modern .badge-secondary {
+  background-color: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+}
+html.hfb-modern .badge-pill { border-radius: 999px; }
+
+/* —— 分页：无框小圆片 —— */
+html.hfb-modern .pagination { gap: 2px; }
+html.hfb-modern .page-link {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  margin: 0 2px;
+  padding: 0.35rem 0.7rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+html.hfb-modern .page-item:not(.active) .page-link:hover {
+  background: var(--btn-bg-hover);
+  color: var(--text-main);
+}
+html.hfb-modern .page-item.active .page-link {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+/* —— 标签页：下划线式（nav-tabs）与分段式（nav-pills） —— */
+html.hfb-modern .nav-tabs { border-bottom: 1px solid var(--line-divider); gap: 2px; }
+html.hfb-modern .nav-tabs .nav-link {
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  padding: 0.5rem 0.95rem;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.15s ease, box-shadow 0.15s ease;
+}
+html.hfb-modern .nav-tabs .nav-link:hover {
+  border: 0;
+  color: var(--text-main);
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+}
+html.hfb-modern .nav-tabs .nav-link.active {
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  box-shadow: inset 0 -2px 0 var(--primary);
+}
+/* 分段式：页面内容区的筛选 pills（页首用户区 .float-right 除外，那边用幽灵按钮） */
+html.hfb-modern ul.nav-pills:not(.float-right) {
+  background: var(--btn-bg);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 2px;
+}
+html.hfb-modern ul.nav-pills:not(.float-right) .nav-link {
+  border-radius: 8px;
+  padding: 0.34rem 0.95rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+html.hfb-modern ul.nav-pills:not(.float-right) .nav-link:hover { color: var(--text-main); }
+html.hfb-modern ul.nav-pills:not(.float-right) .nav-link.active,
+html.hfb-modern ul.nav-pills:not(.float-right) .show > .nav-link {
+  background: var(--card-bg);
+  color: var(--primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+html.hfb-dark.hfb-modern ul.nav-pills:not(.float-right) .nav-link.active {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+/* 幽灵按钮：页首用户区与卡片头部的 float-right pills */
+html.hfb-modern ul.nav-pills.float-right { gap: 4px; }
+html.hfb-modern ul.nav-pills.float-right .nav-link {
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+html.hfb-modern ul.nav-pills.float-right .nav-link:hover {
+  background: var(--btn-bg-hover);
+  color: var(--text-main);
+}
+html.hfb-modern ul.nav-pills.float-right .nav-link.active,
+html.hfb-modern ul.nav-pills.float-right .show > .nav-link {
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+}
+
+/* —— 导航栏：药丸式导航项 —— */
+html.hfb-modern .navbar { padding: 0.45rem 0.9rem; }
+html.hfb-modern .navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-main);
+}
+html.hfb-modern .navbar-nav .nav-link {
+  border-radius: 10px;
+  padding: 0.42rem 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+html.hfb-modern .navbar-nav .nav-link:hover {
+  background: var(--btn-bg-hover);
+  color: var(--text-main);
+}
+html.hfb-modern .navbar-toggler { border: 0; }
+html.hfb-modern #form-search-problem .form-control {
+  border-radius: 999px 0 0 999px;
+  padding-left: 1rem;
+}
+html.hfb-modern #form-search-problem .btn {
+  border-radius: 0 999px 999px 0;
+  border: 0;
+  color: var(--text-soft);
+}
+html.hfb-modern #form-search-problem .btn:hover { transform: none; color: var(--primary); }
+
+/* —— 下拉菜单：大圆角浮层 + 内缩圆角项 —— */
+html.hfb-modern .dropdown-menu {
+  border: 0;
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+html.hfb-dark.hfb-modern .dropdown-menu { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+html.hfb-modern .dropdown-item {
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  margin: 1px 0;
+}
+
+/* —— 提示块：软色无边框 —— */
+html.hfb-modern .alert { border: 0; border-radius: 12px; }
+html.hfb-modern .alert-success {
+  background: color-mix(in srgb, #2fbf4f 12%, transparent);
+  color: color-mix(in srgb, #2fbf4f 55%, var(--text-main));
+}
+html.hfb-modern .alert-danger {
+  background: color-mix(in srgb, #e5484d 12%, transparent);
+  color: color-mix(in srgb, #e5484d 55%, var(--text-main));
+}
+html.hfb-modern .alert-warning {
+  background: color-mix(in srgb, #f5a623 14%, transparent);
+  color: color-mix(in srgb, #b9770e 70%, var(--text-main));
+}
+html.hfb-modern .alert-info {
+  background: color-mix(in srgb, #17a2b8 12%, transparent);
+  color: color-mix(in srgb, #17a2b8 60%, var(--text-main));
+}
+
+/* —— 列表：无框行分隔 —— */
+html.hfb-modern .list-group-item {
+  border: 0;
+  border-bottom: 1px solid var(--line-divider);
+  border-radius: 0 !important;
+}
+html.hfb-modern .list-group-item:last-child { border-bottom: 0; }
+
+/* —— 弹窗 —— */
+html.hfb-modern .modal-content {
+  border: 0;
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+/* —— 细节：引用块 / 缩略图 / 分隔线 / 页脚 / 代码块 —— */
+html.hfb-modern blockquote {
+  border-left: 3px solid var(--primary);
+  background: var(--btn-bg);
+  border-radius: 0 10px 10px 0;
+  padding: 0.8rem 1rem;
+  color: var(--text-soft);
+}
+html.hfb-modern .img-thumbnail {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px var(--line-divider);
+  padding: 0;
+}
+html.hfb-modern hr { border: 0; border-top: 1px solid var(--line-divider); opacity: 1; }
+html.hfb-modern .uoj-footer {
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+}
+html.hfb-modern pre {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px var(--line-divider);
+  padding: 1rem;
+}
