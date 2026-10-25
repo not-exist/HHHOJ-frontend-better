@@ -1,53 +1,57 @@
-# HHHOJ Frontend Better
+# TwilightOJ
 
-Twilight（[Spr-Aachen/Twilight](https://github.com/Spr-Aachen/Twilight)）风格的
-[HHHOJ](https://github.com/Quzhou-No-2-School/HHHOJ) 前端增强篡改猴（Tampermonkey）用户脚本。
+一个参考 [Spr-Aachen/Twilight](https://github.com/Spr-Aachen/Twilight) 设计语言的**在线评测系统（OJ）前端**。当前为纯前端实现：所有数据来自内置 mock，通过统一的服务层隔离，后续可直接替换为真实 API。
 
-## 功能（默认状态）
+![tech](https://img.shields.io/badge/React_18-Vite_5-61dafb) ![lang](https://img.shields.io/badge/TypeScript-strict-3178c6) ![style](https://img.shields.io/badge/Design-Twilight-8b5cf6)
 
-| 功能 | 说明 | 默认 |
-|---|---|---|
-| OKLCH 主题 | 全站颜色由单一色相（默认 255 蓝紫）在 OKLCH 空间派生；浅色/深色/跟随系统 | 开 |
-| 现代皮肤 | 整体替换 Bootstrap 观感：无边框卡片+细描边环、无边框现代表格、填充式输入、药丸徽章/导航、分段与下划线标签页、悬浮微抬升、顶部主色氛围光、系统字体栈 | 开 |
-| 隐藏站点 Logo | 页首小图标与首页大图标隐藏，首页公告表占满整行 | 开 |
-| 毛玻璃材质 | 导航栏 semifull 动态透明（滚动 50px 后 blur(20px) 玻璃化） | 开 |
-| 页面入场动画 | 换页时内容五级渐进浮现（fade-in-up 600ms） | 开 |
-| 金萤粒子 | 暖金光点从屏幕底部升起（Twilight 粒子引擎移植 + 修正） | 开 |
-| 版式细节 | 内容 h3 主题色竖条、链接虚线下划线、卡片悬停渐变描边 | 开 |
-| 全屏壁纸 | 暮色壁纸轮播（Ken Burns + 交叉淡化），卡片半透明化 | 关 |
-
-面板另可定制：**字号**（13–16px 全站，默认 15）、**圆角**（无/小/标准 1rem）。
-
-兜底链（任一命中即自动降级）：`prefers-reduced-motion` → 不启动氛围层；
-检测到进行中的比赛（`/api/contests/:id/dashboard` 的 `cur_progress`）→ 粒子与壁纸暂停；
-低端设备 → 粒子减半关旋转；标签页隐藏 → rAF 暂停（另含 rAF 挂起看门狗）。
-全部可在右下角 ✦ 设置面板中调整。
-
-## 构建与安装
+## 快速开始
 
 ```bash
 pnpm install
-pnpm build          # 产物 dist/hhhoj-frontend-better.user.js
-pnpm typecheck      # tsc --noEmit
-pnpm serve          # 开发用：在 127.0.0.1:5177 托管 dist（配合脚本注入调试）
+pnpm dev        # http://localhost:5173
+pnpm build      # 生产构建（先 tsc 类型检查）
+pnpm preview
 ```
 
-篡改猴 → 实用工具 → 导入用户脚本（或新建脚本粘贴产物内容）。默认 `@match`
-只含本地开发站 `127.0.0.1:18080` / `localhost:18080`，生产域名在
-`scripts/build.mjs` 的 `MATCHES` 里追加后重新构建。
+> 演示环境：任意用户名 / 密码均可登录。
 
-## 架构
+## 功能（核心十件套）
 
-分层与红线见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)，风格移植的源码级依据与
-分期见 [docs/STYLE_PLAN.md](docs/STYLE_PLAN.md)。要点：
+| 路由 | 页面 | 亮点 |
+|---|---|---|
+| `/` | 首页 | Ken Burns 壁纸轮播 + 打字机标语 + 波浪、公告 / **排行榜** / 近期比赛 |
+| `/problems` | 题库 | 关键词 / 难度 / 标签 / 我的状态筛选，通过率与状态标记 |
+| `/problems/:id` | 题目详情 | 双语题面选项卡、样例复制、时空限制侧栏、内嵌代码提交 |
+| `/status` | 评测状态 | **实时提交流**（模拟评测机：Pending → Judging → 终态）、七种结果徽章、代码 + 测试点详情弹窗 |
+| `/contests` | 比赛列表 | 进行中 / 未开始 / 已结束，实时倒计时 |
+| `/contests/:id` | 比赛详情 | 报名、公告、题目、**ACM/OI 榜**（罚时、尝试次数、奖牌配色） |
+| `/discuss` | 讨论区 | 节点分类（题解 / 求助 / 分享 / 公告 / 灌水）、帖子与嵌套评论、点赞 |
+| `/user/:name` | 个人主页 | Rating 曲线（recharts）、统计瓦片、已解决题目 / 提交 / 帖子 |
+| `/login` `/register` | 登录注册 | 玻璃卡片，mock 鉴权持久化 |
+| 设置抽屉 | 全局 | **明暗切换 + 色相滑块实时换色 + 粒子开关 + 中英双语** |
 
-- `src/services/` GM API 垫片（无篡改猴时自动退化为 localStorage）、设置存储、样式注入；
-- `src/core/` SPA 导航感知（patch history API）、fetch 只读拦截（比赛降级信号）；
-- `src/features/` 每功能一模块（`css` + 可选 `setup`/teardown），注册表负责启停与故障隔离；
-- `src/ui/` 设置面板：body 直挂 Shadow DOM，绝不进入 React 管辖的 `#root`；
-- 插件自身 UI 的状态类只挂在 `<html>` 上，React 永远不会清除它们。
+## Twilight 设计语言移植
 
-## 已在真实页面上验证
+- **单色相主题系统**：全部强调色由 `--hue`（默认 `205` · 晴空蓝）派生，设置抽屉拖动滑块全站实时换色；
+- **明暗双模式**：默认浅色（清新），深色为暗夜 hue 底色；
+- **玻璃拟态**：半透明 + `backdrop-blur` + 1px 描边 + 大圆角卡片，悬浮胶囊导航栏；
+- **氛围特效**：canvas 漂浮粒子（随色相变化）、进站 Loading 遮罩（每会话一次）、页面进场 / 卡片 hover 动效；
+- **横幅**：三层径向渐变壁纸（Ken Burns 缓推）+ 打字机副标题 + 无缝循环波浪。
 
-首页/登录页深浅两套主题、色相实时切换、设置面板（分段按钮/开关/滑杆）、
-导航栏滚动玻璃态（与 Twilight 规格逐项一致）、粒子、壁纸模式（渐变兜底）。
+## 目录结构
+
+```
+src/
+  styles/        tokens.css（设计令牌）/ base / components / pages / animations
+  context/       ThemeContext（hue/mode/particles）、AuthContext
+  i18n/          react-i18next，zh.json + en.json
+  mock/          problems / contests / submissions / users / discuss / news
+  services/      api.ts（假 API）、store.ts（提交存储 + 实时评测引擎）、persist.ts
+  components/    NavBar、Particles、Waves、CodeEditor、VerdictBadge、…
+  layouts/       MainLayout
+  pages/         与路由一一对应
+```
+
+## 接真实后端
+
+所有页面仅依赖 `src/services/api.ts` 与 `submissionStore`。将 mock 实现替换为真实请求（保持返回类型为 `src/types.ts` 中的接口）即可，无需改动页面组件。
