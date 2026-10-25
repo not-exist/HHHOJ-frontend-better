@@ -1,16 +1,39 @@
 {
-  "name": "hhhoj-frontend-better",
-  "version": "0.2.0",
+  "name": "twilight-oj",
   "private": true,
+  "version": "1.0.0",
   "type": "module",
+  "description": "Twilight-styled Online Judge frontend",
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "watch": "node scripts/build.mjs --watch",
-    "typecheck": "tsc --noEmit",
-    "serve": "node scripts/serve.mjs"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@codemirror/lang-cpp": "^6.0.0",
+    "@codemirror/lang-java": "^6.0.0",
+    "@codemirror/lang-python": "^6.0.0",
+    "@codemirror/state": "^6.5.0",
+    "@codemirror/view": "^6.36.0",
+    "@lezer/highlight": "^1.2.1",
+    "@uiw/codemirror-themes": "^4.23.5",
+    "@uiw/react-codemirror": "^4.23.5",
+    "i18next": "^23.16.4",
+    "lucide-react": "^0.454.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^15.1.1",
+    "react-router-dom": "^6.30.0",
+    "recharts": "^2.13.3"
   },
   "devDependencies": {
-    "esbuild": "^0.25.10",
-    "typescript": "^5.8.3"
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "typescript": "~5.6.3",
+    "vite": "^5.4.10"
   }
 }
