@@ -265,6 +265,22 @@ POST /api/zan                                    { type: "B"|"BC", id, delta: 1|
 | `groups[].name` | 资料卡徽章 |
 | `register_time` | `joinedAt`（无权限时显示 —） |
 
+### 用户卡片 `/api/users/cards?names=a,b`
+
+```json
+{ "cards": { "alice": { "username", "rating", "rank_percent", "is_superuser", "avatar_hash", "badge": { "text", "color", "text_color" } } } }
+```
+
+| 原始 | 领域 |
+|---|---|
+| `rating` | `UserCard.rating` |
+| `rank_percent` | `UserCard.rankPercent`（用户名默认配色：0 榜首，1 榜尾） |
+| `is_superuser` | `UserCard.isSuperuser`（管理员彩虹名） |
+| `avatar_hash` | `UserCard.avatarHash` |
+| `badge.*` | `UserCard.badge`（用户名后的徽章） |
+
+`UserLink` 通过 `src/components/useUserCards.ts` 按页批量请求，同一 tick 合并，单批最多 500 个名字。
+
 补充请求：
 
 - `/api/submissions?submitter=<name>&size=100` → 提交 tab 与提交总数

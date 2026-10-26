@@ -19,6 +19,8 @@
 | 讨论区列表 | `/blogs` | 真实博客列表；无帖子时空态 |
 | 讨论详情 | `/blogs/1` | 博客 HTML、公式、评论 HTML、点赞、发表评论均正常 |
 | 用户资料 | `/user/profile/twilight_test` | 资料卡、groups、统计、Rating 曲线（SVG）、三个 tab 正常 |
+| 用户名配色 | 首页 / 状态 / 讨论 / 资料页 | 普通用户按 rank_percent 连续渐变；管理员彩虹；≥2500 有 ℵ；徽章显示 |
+| Rating 曲线 | `/user/profile/twilight_test` | 500px、时间轴、评级渐变、悬浮 tooltip、点击固定、空历史单点 |
 | 登录 | `/login` | 真实账号登录成功，`?to=` 回跳 |
 | 注册 | `/register` | 真实注册请求成功；返回待审核提示并跳转登录 |
 | 未登录访问 | `/problems` | 登录引导态，不白屏 |
@@ -46,6 +48,25 @@ Exception: failed to update problem data of #1
 4. 列表显示终态（Runtime Error），详情弹窗显示源码与测试点区域。
 
 这是服务端数据缺失，不是前端链路问题。同库中已有的 AC 提交 `#1` 在接管页详情中正确解析出 1 个测试点（AC / 1 ms / 3 MB / 100 分）。
+
+## Rating 配色与曲线验证（2026-10-26）
+
+在 `rating-fix` 分支上使用 `dist/hhhoj-twilight.user.js`（Playwright `addInitScript` 注入，Chromium headless）验证：
+
+| 检查 | 结果 |
+|---|---|
+| 构建 | `pnpm typecheck` 通过；`pnpm build` 产物 2,640.00 kB / gzip 567.60 kB |
+| 用户名连续配色 | mock 首页 11 个 `.user-link` 出现 10 种不同颜色，按 rank_percent 渐变 |
+| ℵ 标记 | Nebula 2861 → `ℵℵ`，Astesia 2593 → `ℵ`，2499 → 无 |
+| 特殊用户名 | `specialUsernameColor('zhuchuanqi') = #AD8B00` |
+| 管理员 / 徽章 | 拦截 cards 返回 `is_superuser: true` + badge：类名 `uoj-username-admin`，`background-image` 为彩虹渐变，徽章 `DEV` 背景 `rgb(18,52,86)` |
+| 批量请求 | 真实首页仅一次 `/api/users/cards?names=user` |
+| 曲线几何 | viewBox `0 0 1153 500`，12 个 data circle，64 个 gradient stop，Y 轴 1500/2000/2500/3000 |
+| 曲线交互 | hover 首个点出现 `= 1899 (0), 排名：1 / Round #1`；点击后 tooltip 关闭（原版 flot 行为） |
+| 深色模式 | 渐变 rect `opacity=0.35`，图例背景 `rgba(20,20,28,0.85)`，文字 `rgb(185,185,198)` |
+| 浅色模式 | 渐变 rect `opacity=1`，网格/标签 `#545454`，图例背景 `rgba(255,255,255,0.85)` |
+
+控制台仍只有接管层已知的两条原站异常（`null.append` 与 React #299），与本次改动无关。
 
 ## 构建
 
