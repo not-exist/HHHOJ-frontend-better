@@ -46,5 +46,6 @@ export type {
   SubmissionListParams,
   SubmissionPage,
   SubmissionStatus,
+  UserCard,
   UserProfileData,
 } from './types'

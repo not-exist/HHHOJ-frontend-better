@@ -22,6 +22,16 @@ export interface SessionUser {
   groups?: { name: string; note?: string }[]
 }
 
+export interface UserCard {
+  username: string
+  rating: number
+  /** 0 = 榜首，1 = 榜尾；非普通用户为 1 */
+  rankPercent: number
+  isSuperuser: boolean
+  avatarHash: string
+  badge?: { text: string; color: string; textColor: string }
+}
+
 export interface RegisterInput {
   username: string
   password: string
@@ -113,6 +123,7 @@ export interface ApiClient {
   threads(): Promise<Thread[]>
   thread(id: number): Promise<Thread | undefined>
   user(name: string): Promise<UserProfileData | undefined>
+  userCards(names: string[]): Promise<Record<string, UserCard>>
 
   submissions(params?: SubmissionListParams): Promise<SubmissionPage>
   submission(id: number): Promise<Submission | undefined>

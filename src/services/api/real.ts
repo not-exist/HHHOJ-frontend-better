@@ -27,6 +27,7 @@ import type {
   SubmissionListParams,
   SubmissionPage,
   SubmissionStatus,
+  UserCard,
   UserProfileData,
   ZanResult,
 } from './types'
@@ -270,6 +271,15 @@ interface RawProfile {
   ac_problems: number[]
   rating_history: { contest_id: number; name: string; start_time: string; rank: number; rating: number; delta: number }[]
   register_time?: string
+}
+
+interface RawUserCard {
+  username: string
+  rating: number
+  rank_percent: number
+  is_superuser: boolean
+  avatar_hash: string
+  badge?: { text: string; color: string; text_color: string }
 }
 
 interface RawMe {
@@ -623,6 +633,19 @@ function mapRank(r: RawRank): RanklistRow {
   }
 }
 
+function mapUserCard(c: RawUserCard): UserCard {
+  return {
+    username: c.username,
+    rating: c.rating,
+    rankPercent: c.rank_percent,
+    isSuperuser: c.is_superuser,
+    avatarHash: c.avatar_hash,
+    badge: c.badge
+      ? { text: c.badge.text, color: c.badge.color, textColor: c.badge.text_color }
+      : undefined,
+  }
+}
+
 function mapSessionUser(me: RawMe): SessionUser | null {
   if (!me.user) return null
   return {
@@ -650,6 +673,16 @@ export const realApi: ApiClient = {
       userRanklist: (data.user_ranklist ?? []).map(mapRank),
       problemRanklist: (data.problem_ranklist ?? []).map(mapRank),
     }
+  },
+
+  async userCards(names: string[]): Promise<Record<string, UserCard>> {
+    if (names.length === 0) return {}
+    const data = await get<{ cards: Record<string, RawUserCard> }>('/api/users/cards', {
+      names: names.join(','),
+    })
+    return Object.fromEntries(
+      Object.entries(data.cards ?? {}).map(([name, card]) => [name, mapUserCard(card)]),
+    )
   },
 
   async announcements(): Promise<Announcement[]> {
