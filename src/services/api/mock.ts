@@ -27,6 +27,7 @@ import type {
   SubmissionListParams,
   SubmissionPage,
   SubmissionStatus,
+  UserCard,
   UserProfileData,
   ZanResult,
 } from './types'
@@ -171,12 +172,31 @@ export const mockApi: ApiClient = {
       ratingHistory: found.ratingHistory.map((rating, i) => ({
         contestId: i + 1,
         name: `Round #${i + 1}`,
-        startTime: '',
+        startTime: `${2023 + Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}-15 10:00:00`,
         rank: i + 1,
         rating,
         delta: i > 0 ? rating - found.ratingHistory[i - 1] : 0,
       })),
     }
+  },
+
+  async userCards(names: string[]): Promise<Record<string, UserCard>> {
+    await delay()
+    const sorted = [...USERS].sort((a, b) => b.rating - a.rating)
+    const out: Record<string, UserCard> = {}
+    for (const name of names) {
+      const user = USERS.find((u) => u.name.toLowerCase() === name.toLowerCase())
+      if (!user) continue
+      const index = sorted.findIndex((u) => u.name === user.name)
+      out[user.name] = {
+        username: user.name,
+        rating: user.rating,
+        rankPercent: sorted.length <= 1 ? 0 : index / (sorted.length - 1),
+        isSuperuser: false,
+        avatarHash: '',
+      }
+    }
+    return out
   },
 
   async submissions(params: SubmissionListParams = {}): Promise<SubmissionPage> {

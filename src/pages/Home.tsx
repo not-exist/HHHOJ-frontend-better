@@ -227,7 +227,9 @@ export default function Home() {
               <div className="profile-mini">
                 <span className="avatar" style={avatarStyle(user.name, 52)}>{user.name.slice(0, 1).toUpperCase()}</span>
                 <div className="grow">
-                  <div style={{ fontWeight: 700 }}>{user.name}</div>
+                  <div style={{ fontWeight: 700 }}>
+                    <UserLink name={user.name} link={false} />
+                  </div>
                   <div className="small muted">
                     Rating · <b style={{ color: `var(${RATING_VARS[ratingTier(user.rating)]})` }}>{user.rating}</b>
                   </div>

@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, CalendarDays, GraduationCap, Target, Send, Percent, Activity, MessageSquare, Inbox } from 'lucide-react'
 import DifficultyTag from '@/components/DifficultyTag'
 import RatingChart from '@/components/RatingChart'
+import UserLink from '@/components/UserLink'
 import { EmptyState, ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
@@ -27,11 +28,6 @@ export default function UserProfile() {
   )
   const profile = profileRes.data
   const user = profile?.user
-
-  const chartData = useMemo(
-    () => (profile?.ratingHistory ?? []).map((h, i) => ({ name: h.name || `#${i + 1}`, rating: h.rating })),
-    [profile?.ratingHistory],
-  )
 
   if (authLoading) return <Loading label="读取会话…" />
   if (!me) return <LoginRequired text="登录后查看用户资料" />
@@ -69,7 +65,9 @@ export default function UserProfile() {
           <span className="avatar" style={avatarStyle(user.name, 74)}>{user.name.slice(0, 1).toUpperCase()}</span>
           <div className="grow">
             <div className="row wrap" style={{ gap: '0.6rem' }}>
-              <h1 style={{ fontSize: '1.5rem', color: `var(${RATING_VARS[tier]})` }}>{user.name}</h1>
+              <h1 style={{ fontSize: '1.5rem' }}>
+                <UserLink name={user.name} link={false} />
+              </h1>
               <span className="badge" style={{ color: `var(${RATING_VARS[tier]})`, background: 'var(--primary-soft)' }}>
                 {user.rating}
               </span>
@@ -97,11 +95,7 @@ export default function UserProfile() {
       {/* Rating 曲线 */}
       <section className="glass pad rise" style={{ marginBottom: '1.25rem', animationDelay: '0.05s' }}>
         <h2 className="card-title"><Activity size={16} /> {t('user.ratingCurve')}</h2>
-        {chartData.length >= 2 ? (
-          <RatingChart data={chartData} height={220} />
-        ) : (
-          <EmptyState text="暂无 Rating 参赛记录" />
-        )}
+        <RatingChart username={user.name} history={profile.ratingHistory} current={user.rating} />
       </section>
 
       {/* Tabs */}

@@ -265,6 +265,8 @@
     "joined": "注册于",
     "school": "学校",
     "ratingCurve": "Rating 曲线",
+    "ratingRank": "排名：{{rank}}",
+    "ratingUnrated": "Unrated",
     "tabSolved": "已解决题目",
     "tabSubmissions": "提交记录",
     "tabThreads": "讨论帖子",
