@@ -265,6 +265,8 @@
     "joined": "Joined",
     "school": "School",
     "ratingCurve": "Rating curve",
+    "ratingRank": "Rank: {{rank}}",
+    "ratingUnrated": "Unrated",
     "tabSolved": "Solved problems",
     "tabSubmissions": "Submissions",
     "tabThreads": "Threads",

@@ -8,6 +8,7 @@ import {
 import { useTheme } from '@/context/ThemeContext'
 import { roleLabel, useAuth } from '@/context/AuthContext'
 import SettingsDrawer from '@/components/SettingsDrawer'
+import UserLink from '@/components/UserLink'
 import { avatarStyle } from '@/utils/user'
 import i18n from '@/i18n'
 
@@ -103,7 +104,9 @@ export default function NavBar() {
                   }}
                 >
                   <div style={{ padding: '0.4rem 0.7rem 0.5rem', borderBottom: '1px solid var(--border)', marginBottom: '0.3rem' }}>
-                    <div style={{ fontWeight: 700 }}>{user.name}</div>
+                    <div style={{ fontWeight: 700 }}>
+                      <UserLink name={user.name} link={false} />
+                    </div>
                     <div className="small faint">
                       Rating · {user.rating}
                       {user.role && <span className="badge" style={{ marginLeft: 6, color: 'var(--primary)', background: 'var(--primary-soft)' }}>{roleLabel(user.role)}</span>}
