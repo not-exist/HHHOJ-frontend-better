@@ -4,16 +4,11 @@ import { EditorView } from '@codemirror/view'
 import { createTheme } from '@uiw/codemirror-themes'
 import { tags as t } from '@lezer/highlight'
 import { cpp } from '@codemirror/lang-cpp'
-import { java } from '@codemirror/lang-java'
-import { python } from '@codemirror/lang-python'
 import { useTheme } from '@/context/ThemeContext'
 
-const EXT_BY_LANG: Record<string, ReturnType<typeof cpp>> = {
-  'C++20': cpp(),
-  'C++17': cpp(),
-  C: cpp(),
-  Java: java(),
-  'Python 3': python(),
+/** HHHOJ 只判 C / C++ 家族，统一使用 C++ 语法高亮 */
+function languageExtension() {
+  return cpp()
 }
 
 /** 随主题色相变化的 CodeMirror 主题（Twilight 特色） */
@@ -62,10 +57,8 @@ export default function CodeEditor({
   height?: string
 }) {
   const theme = useHueEditorTheme()
-  const ext = useMemo(() => {
-    const lang = EXT_BY_LANG[language]
-    return [lang ?? cpp(), EditorView.lineWrapping].flat()
-  }, [language])
+  const ext = useMemo(() => [languageExtension(), EditorView.lineWrapping].flat(), [])
+  void language
   return (
     <div className="editor-shell">
       <CodeMirror

@@ -50,7 +50,7 @@ Exception: failed to update problem data of #1
 ## 构建
 
 ```text
-dist/hhhoj-twilight.user.js  2,740.49 kB │ gzip: 603.71 kB
+dist/hhhoj-twilight.user.js  2,619.12 kB │ gzip: 562.18 kB
 ✓ built in ...
 ```
 

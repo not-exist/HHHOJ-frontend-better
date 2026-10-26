@@ -2,7 +2,7 @@
 
 一个 Tampermonkey 用户脚本：访问 HHHOJ 时，把整页替换为 [TwilightOJ](https://github.com/Spr-Aachen/Twilight) 风格的 React OJ 界面，数据全部来自 HHHOJ 真实 `/api/*`。TwilightOJ 没有覆盖的页面（博客写作、私信、管理后台、ranklist、提交详情等）会**自动回退原站**，不损失功能。
 
-- 构建产物：`dist/hhhoj-twilight.user.js`（单文件，约 2.7 MB / gzip 约 600 KB）
+- 构建产物：`dist/hhhoj-twilight.user.js`（单文件，约 2.6 MB / gzip 约 560 KB）
 - 数据源：HHHOJ 本地 `http://127.0.0.1:18080`（生产域名见下方 `@match` 配置）
 - 设计基线：仓库 `base` 分支的 TwilightOJ（React 18 + Vite 5 + CodeMirror 6 + i18next）
 
