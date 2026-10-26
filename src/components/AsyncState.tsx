@@ -26,6 +26,13 @@ export function errorMessage(error: unknown): string {
   return String(error ?? '未知错误')
 }
 
+/** 同一路径加 ?native=1：用户脚本据此切到原站，而不是再次接管同一路径 */
+function nativeHref(pathname: string, search: string): string {
+  const params = new URLSearchParams(search)
+  params.set('native', '1')
+  return `${pathname}?${params.toString()}`
+}
+
 export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () => void }) {
   const authError = isAuthError(error)
   const location = useLocation()
@@ -38,7 +45,7 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
         <p className="small faint">{errorMessage(error)}</p>
         <div className="row" style={{ justifyContent: 'center', marginTop: '0.8rem' }}>
           <Link className="btn btn-primary btn-sm" to={`/login?to=${to}`}>登录</Link>
-          <a className="btn btn-ghost btn-sm" href={location.pathname + location.search}>原站查看</a>
+          <a className="btn btn-ghost btn-sm" href={nativeHref(location.pathname, location.search)}>原站查看</a>
         </div>
       </div>
     )
@@ -48,9 +55,12 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
       <AlertTriangle size={26} style={{ margin: '0 auto 0.6rem', color: 'var(--v-tle)' }} />
       <p style={{ fontWeight: 600 }}>加载失败</p>
       <p className="small faint" style={{ maxWidth: '38rem', margin: '0.2rem auto 0.9rem' }}>{errorMessage(error)}</p>
-      {onRetry && (
-        <button className="btn btn-primary btn-sm" onClick={onRetry}>重试</button>
-      )}
+      <div className="row" style={{ justifyContent: 'center' }}>
+        {onRetry && (
+          <button className="btn btn-primary btn-sm" onClick={onRetry}>重试</button>
+        )}
+        <a className="btn btn-ghost btn-sm" href={nativeHref(location.pathname, location.search)}>原站查看</a>
+      </div>
     </div>
   )
 }

@@ -122,6 +122,9 @@ export default function ProblemDetail() {
   if (!problem) return null
 
   const rate = problem.countsKnown === false ? null : Math.round((problem.solved / Math.max(1, problem.submissions)) * 100)
+  const nativeParams = new URLSearchParams(search)
+  nativeParams.set('native', '1')
+  const nativeHref = `${window.location.pathname}?${nativeParams.toString()}`
   const prev = problem.prevProblemId && problem.prevProblemId !== problem.id ? problem.prevProblemId : null
   const next = problem.nextProblemId && problem.nextProblemId !== problem.id ? problem.nextProblemId : null
   const tabs: [Tab, string][] = [
@@ -255,7 +258,7 @@ export default function ProblemDetail() {
             {!supported ? (
               <div className="empty" style={{ padding: '1.2rem' }}>
                 <p>这道题需要多文件或文本提交，TwilightOJ 接管页暂不支持。</p>
-                <a className="btn btn-ghost btn-sm" href={`/problem/${problem.id}`}>
+                <a className="btn btn-ghost btn-sm" href={nativeHref}>
                   <ExternalLink size={13} /> 在原站提交
                 </a>
               </div>

@@ -184,7 +184,7 @@ export default function ContestDetail({ initialTab = 'announcements' }: { initia
           ) : (
             <div className="empty">
               <Inbox /> {standingsError || t('contests.standingsEmpty')}
-              <a className="btn btn-ghost btn-sm" style={{ marginLeft: 8 }} href={`/contest/${cid}/standings`}>
+              <a className="btn btn-ghost btn-sm" style={{ marginLeft: 8 }} href={`/contest/${cid}/standings?native=1`}>
                 <ExternalLink size={12} /> 原站榜单
               </a>
             </div>
