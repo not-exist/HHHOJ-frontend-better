@@ -20,7 +20,7 @@ src/userscript.ts
             │    ├─ 首屏遮罩 <style data-twilight-style="cover">
             │    └─ MutationObserver：移除 #root / 原站 stylesheet / 挂载前的 <style>
             └─ DOMContentLoaded → mount()
-                 ├─ 最后一次样式清扫 + 断开 observer
+                 ├─ 最后一次样式清扫；observer 继续只拦截迟到的 stylesheet link 与 #root
                  ├─ 移除 #root，清空 <body>
                  ├─ 挂载 <div id="twilight-root">
                  ├─ 移除 cover 样式
@@ -78,9 +78,9 @@ createRoot(document.getElementById('root')!, ...)
 TwilightOJ 的 CSS 是全局的（`:root`、`body`、`.glass` 等），因此接管页不尝试把几万行 CSS 逐条加前缀，而是**确保页面上只存在一套 CSS**：
 
 - **解析期**：MutationObserver 移除非本脚本的 `link[rel~=stylesheet]` 与 `<style>`，同时移除 `#root`。
-- **挂载前**：`stripNativeStyles(true)` 做最后一次全量清扫，然后断开 observer。
+- **挂载前**：`stripNativeStyles(true)` 做最后一次全量清扫。observer 继续运行，但 `mounted=true` 后只处理 stylesheet link 与 `#root`，不再删除 `<style>`。
 - **本脚本样式**：全部挂在 `<style data-twilight-style="full">`，由 `injectTwilightStyles()` 注入；首屏遮罩是 `data-twilight-style="cover"`，挂载时删除。
-- **CodeMirror**：它在运行时注入自己的 `<style>`。因为在它加载之前 observer 已经断开，所以不会被误删。
+- **CodeMirror**：它在运行时注入自己的 `<style>`。挂载后 observer 不再删除 style 标签，因此不会误删。
 - **回退页**：脚本在路由门退出，原站样式完全不受影响；接管页与原站页之间只通过整页 reload 切换，不存在跨状态 CSS 残留。
 
 字体不引 CDN：`tokens.css` 使用 `PingFang SC / Noto Sans SC / Microsoft YaHei / system-ui` 等本地字体栈。KaTeX 使用 MathML 输出，不加载 KaTeX 字体。
@@ -116,6 +116,6 @@ GM 存储通过 `vite-plugin-monkey` 的 `$` 客户端读写；在没有 GM API 
 |---|---|---|
 | 页面一直空白 | 动态 import 失败 / CodeMirror 初始化异常 | 控制台看 `[TwilightOJ] 挂载失败`；`?native=1` 回原站 |
 | 原站界面闪一下 | 首屏遮罩被移除过早 | 遮罩在 `mount()` 后移除，正常不会闪；若出现检查是否走了表外路径 |
-| 样式错乱 | 原站样式在 observer 断开后重新注入（dev HMR） | 生产不会；dev 下刷新即可 |
+| 样式错乱 | 原站 route chunk 在挂载后注入 `<style>`（主要出现在 dev HMR） | 生产样式多为 stylesheet link，会被 observer 拦截；dev 下刷新即可 |
 | `#root` 找不到但页面是原站 | 路由不在接管表 | 预期行为 |
 | 登录后仍是未登录态 | Cookie 被浏览器阻止 / 非同源 | 确认通过 `127.0.0.1:18080` 访问，而不是直接打开 `dist` 文件 |

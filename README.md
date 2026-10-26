@@ -44,7 +44,7 @@ http://127.0.0.1:18080/?__mock=1    # 使用内置 mock 数据（保留模拟评
 http://127.0.0.1:18080/?__mock=0    # 关闭 mock
 ```
 
-mock 模式标记存在 `sessionStorage`，进入后当前标签页内继续生效。独立打开 `index.html`（不经过接管层）时，开发模式也默认使用 mock。
+mock 模式标记存在 `sessionStorage`，进入后当前标签页内继续生效。`src/main.tsx` 保留独立挂载入口，供不经过接管层的预览使用；`pnpm dev` 的根页面则是 vite-plugin-monkey 的脚本安装页，不是应用页面。
 
 ## 接管范围
 
@@ -87,7 +87,7 @@ mock 模式标记存在 `sessionStorage`，进入后当前标签页内继续生�
 
 1. **document-start 路由门**：路径不在接管表内 → 直接退出。
 2. **阻止原站启动**：临时让 `document.getElementById('root')` 返回 `null`，原站内联 shell 与 `main.tsx` 在挂载时抛错跳过；`#root` 出现即移除。
-3. **样式隔离**：解析期间用 MutationObserver 移除非本脚本的 `<link rel=stylesheet>` / `<style>`；挂载前整体清扫一次并断开 observer，避免误伤 CodeMirror 的运行时样式。
+3. **样式隔离**：解析期间用 MutationObserver 移除非本脚本的 `<link rel=stylesheet>` / `<style>`；挂载前整体清扫一次，之后 observer 继续只拦截迟到的 stylesheet link 与 `#root`，不再删除 `<style>`，避免误伤 CodeMirror 的运行时样式。
 4. **延迟求值**：React、CodeMirror、KaTeX 通过动态 import 在 DOMContentLoaded 后才求值（CodeMirror 在模块初始化时会读 `document.documentElement`）；vite-plugin-monkey 使用 inline SystemJS 保证动态 import 真正延迟。
 5. **挂载**：清空 `<body>`，挂载 `<div id="twilight-root">`，完整主题 CSS 注入到带 `data-twilight-style="full"` 的 `<style>` 中。
 
