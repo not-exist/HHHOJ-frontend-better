@@ -127,7 +127,7 @@
   },
   "status": {
     "title": "Submission Status",
-    "liveHint": "Live — the site-wide submission feed",
+    "liveHint": "Polling your pending submissions",
     "filterUser": "Username",
     "filterProblem": "Problem ID",
     "filterVerdict": "Verdict",
@@ -303,6 +303,8 @@
     "github": "GitHub",
     "api": "API",
     "style": "Twilight style guide",
+    "ranklist": "Ranklist",
+    "announcements": "Announcements",
     "copyright": "© 2026 TwilightOJ · Built on the Twilight design language"
   },
   "notfound": {

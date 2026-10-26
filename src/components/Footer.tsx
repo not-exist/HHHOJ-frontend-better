@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Sparkles, Github, BookOpen, Heart } from 'lucide-react'
+import { Sparkles, BookOpen, Trophy, Megaphone, Heart } from 'lucide-react'
 
 export default function Footer() {
   const { t } = useTranslation()
@@ -16,9 +16,9 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer-links">
-          <a href="#" onClick={(e) => e.preventDefault()}><BookOpen size={13} style={{ verticalAlign: '-2px', marginRight: 4 }} />{t('footer.docs')}</a>
-          <a href="#" onClick={(e) => e.preventDefault()}><Github size={13} style={{ verticalAlign: '-2px', marginRight: 4 }} />{t('footer.github')}</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.style')}</a>
+          <a href="/faq"><BookOpen size={13} style={{ verticalAlign: '-2px', marginRight: 4 }} />{t('footer.docs')}</a>
+          <a href="/ranklist"><Trophy size={13} style={{ verticalAlign: '-2px', marginRight: 4 }} />{t('footer.ranklist')}</a>
+          <a href="/announcements"><Megaphone size={13} style={{ verticalAlign: '-2px', marginRight: 4 }} />{t('footer.announcements')}</a>
         </div>
         <div className="row" style={{ gap: '0.3rem', color: 'var(--text-3)' }}>
           <Heart size={12} />

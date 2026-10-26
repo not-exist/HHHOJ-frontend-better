@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { SlidersHorizontal, MoonStar, Palette, Wand2, Languages } from 'lucide-react'
+import { SlidersHorizontal, MoonStar, Palette, Wand2, Languages, ExternalLink } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
+import { setNativeMode } from '@/services/gm'
 import i18n from '@/i18n'
 
 export default function SettingsDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -76,6 +77,29 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
               {t('settings.en')}
             </button>
           </div>
+        </div>
+
+        <div className="drawer-group">
+          <span className="field-label">
+            <ExternalLink size={13} style={{ verticalAlign: '-2px', marginRight: 4 }} />
+            接管与逃生舱
+          </span>
+          <p className="small faint" style={{ marginBottom: '0.55rem' }}>
+            未接管的页面会自动使用 HHHOJ 原站；这里可以整站切回原站。
+          </p>
+          <button
+            className="btn btn-ghost btn-sm"
+            style={{ width: '100%' }}
+            onClick={() => {
+              setNativeMode(true)
+              location.reload()
+            }}
+          >
+            <ExternalLink size={13} /> 切换到 HHHOJ 原站
+          </button>
+          <p className="small faint" style={{ marginTop: '0.5rem' }}>
+            也可以访问 <code>?native=1</code>；用 <code>?takeover=1</code> 或 GM 菜单恢复接管。
+          </p>
         </div>
       </aside>
     </>

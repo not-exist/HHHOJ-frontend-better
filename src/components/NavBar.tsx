@@ -6,17 +6,17 @@ import {
   Settings, Sun, Moon, Menu, X, LogOut, UserRound, Sparkles,
 } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
-import { useAuth } from '@/context/AuthContext'
+import { roleLabel, useAuth } from '@/context/AuthContext'
 import SettingsDrawer from '@/components/SettingsDrawer'
-import { avatarStyle } from '@/mock/users'
+import { avatarStyle } from '@/utils/user'
 import i18n from '@/i18n'
 
 const LINKS = [
   { to: '/', key: 'nav.home', icon: Home, end: true },
   { to: '/problems', key: 'nav.problems', icon: LayoutList, end: false },
-  { to: '/status', key: 'nav.status', icon: Activity, end: false },
+  { to: '/submissions', key: 'nav.status', icon: Activity, end: false },
   { to: '/contests', key: 'nav.contests', icon: Trophy, end: false },
-  { to: '/discuss', key: 'nav.discuss', icon: MessagesSquare, end: false },
+  { to: '/blogs', key: 'nav.discuss', icon: MessagesSquare, end: false },
 ] as const
 
 export default function NavBar() {
@@ -46,9 +46,10 @@ export default function NavBar() {
   const toggleLang = () => void i18n.changeLanguage(i18n.language === 'zh' ? 'en' : 'zh')
 
   const handleLogout = () => {
-    logout()
-    setMenuOpen(false)
-    navigate('/')
+    void logout().then(() => {
+      setMenuOpen(false)
+      navigate('/')
+    })
   }
 
   return (
@@ -103,9 +104,12 @@ export default function NavBar() {
                 >
                   <div style={{ padding: '0.4rem 0.7rem 0.5rem', borderBottom: '1px solid var(--border)', marginBottom: '0.3rem' }}>
                     <div style={{ fontWeight: 700 }}>{user.name}</div>
-                    <div className="small faint">Rating · {user.rating}</div>
+                    <div className="small faint">
+                      Rating · {user.rating}
+                      {user.role && <span className="badge" style={{ marginLeft: 6, color: 'var(--primary)', background: 'var(--primary-soft)' }}>{roleLabel(user.role)}</span>}
+                    </div>
                   </div>
-                  <button className="nav-link" style={{ width: '100%' }} onClick={() => { setMenuOpen(false); navigate(`/user/${user.name}`) }}>
+                  <button className="nav-link" style={{ width: '100%' }} onClick={() => { setMenuOpen(false); navigate(`/user/profile/${encodeURIComponent(user.name)}`) }}>
                     <UserRound /> {t('nav.profile')}
                   </button>
                   <button className="nav-link" style={{ width: '100%' }} onClick={handleLogout}>

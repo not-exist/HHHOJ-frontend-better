@@ -1,56 +1,46 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   ChevronLeft, CalendarDays, Clock3, Users, Trophy, Megaphone, Inbox,
-  CheckCircle2, XCircle, MinusCircle,
+  CheckCircle2, MinusCircle, ExternalLink,
 } from 'lucide-react'
 import Countdown from '@/components/Countdown'
-import DifficultyTag from '@/components/DifficultyTag'
 import UserLink from '@/components/UserLink'
-import { CONTESTS, standingsFor } from '@/mock/contests'
-import { PROBLEMS } from '@/mock/problems'
+import SafeHtml from '@/components/SafeHtml'
+import { ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
 import { useAuth } from '@/context/AuthContext'
+import { api, isMock } from '@/services/api'
+import { useApi } from '@/services/useApi'
 import { pick, fmtDateTime, fmtDuration } from '@/utils/i18nContent'
-import { showToast } from '@/components/Toast'
 import type { StandingsRow } from '@/types'
 
 type Tab = 'announcements' | 'problems' | 'standings'
 
-export default function ContestDetail() {
+export default function ContestDetail({ initialTab = 'announcements' }: { initialTab?: Tab }) {
   const { id } = useParams()
   const cid = Number(id)
   const { t } = useTranslation()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
-  const contest = useMemo(() => CONTESTS.find((c) => c.id === cid), [cid])
-  const standings = useMemo(() => (contest ? standingsFor(contest) : []), [contest])
-  const [tab, setTab] = useState<Tab>('announcements')
-  const [registered, setRegistered] = useState(false)
+  const detailRes = useApi(
+    () => (user ? api.contest(cid) : Promise.reject(new Error('login required'))),
+    [user?.name, cid],
+  )
+  const [tab, setTab] = useState<Tab>(initialTab)
 
   useEffect(() => {
-    setTab('announcements')
-    setRegistered(false)
-  }, [cid])
+    setTab(initialTab)
+  }, [cid, initialTab])
 
-  if (!contest) {
-    return (
-      <div className="glass pad center" style={{ padding: '4rem 1rem' }}>
-        <p>{t('contests.backToContests')}</p>
-        <Link to="/contests" className="btn btn-primary btn-sm"><ChevronLeft size={14} /> {t('contests.title')}</Link>
-      </div>
-    )
-  }
-
-  const register = () => {
-    if (!user) {
-      showToast(t('common.pleaseLogin'))
-      return
-    }
-    setRegistered(true)
-    showToast(t('contests.registered') + ' ✓')
-  }
+  if (authLoading) return <Loading label="读取会话…" />
+  if (!user) return <LoginRequired text="登录后查看比赛" />
+  if (detailRes.loading) return <Loading label="读取比赛…" />
+  if (detailRes.error) return <ErrorState error={detailRes.error} onRetry={detailRes.reload} />
+  const data = detailRes.data
+  if (!data) return null
+  const { contest, problems, standings, standingsError } = data
 
   return (
     <>
@@ -68,14 +58,19 @@ export default function ContestDetail() {
               <span className="contest-rule-badge" style={{ width: '2.6rem', height: '2.6rem', fontSize: '0.8rem' }}>{contest.rule}</span>
               <h1 style={{ fontSize: '1.4rem' }}>{pick(contest.title, contest.titleEn)}</h1>
               {contest.rated && <span className="badge" style={{ color: 'var(--primary)', background: 'var(--primary-soft)' }}>{t('contests.rated')}</span>}
+              {contest.registered && <span className="badge" style={{ color: 'var(--v-acced)', background: 'var(--v-acced-glow)' }}>已报名</span>}
             </div>
             <div className="contest-meta" style={{ marginTop: '0.4rem' }}>
               <span><CalendarDays /> {fmtDateTime(contest.startAt)} → {fmtDateTime(contest.endAt)}</span>
               <span><Clock3 /> {fmtDuration(contest.endAt - contest.startAt)}</span>
-              <span><Users /> {t('home.participants', { n: contest.participantCount + (registered ? 1 : 0) })}</span>
-              <span>{t('contests.problemsCount', { n: contest.problems.length })}</span>
+              {contest.participantCount > 0 && <span><Users /> {t('home.participants', { n: contest.participantCount })}</span>}
+              {problems.length > 0 && <span>{t('contests.problemsCount', { n: problems.length })}</span>}
             </div>
-            <p className="muted" style={{ marginTop: '0.7rem', maxWidth: '42rem' }}>{pick(contest.description, contest.descriptionEn)}</p>
+            {contest.descriptionHtml ? (
+              <SafeHtml html={contest.descriptionHtml} className="statement statement-html" />
+            ) : (
+              <p className="muted" style={{ marginTop: '0.7rem', maxWidth: '42rem' }}>{pick(contest.description, contest.descriptionEn)}</p>
+            )}
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
             {contest.phase === 'running' && (
@@ -90,14 +85,15 @@ export default function ContestDetail() {
                 <div className="small faint">{t('contests.startsIn')}</div>
                 <Countdown target={contest.startAt} />
                 <div>
-                  <button
-                    className={`btn btn-sm ${registered ? 'btn-ghost' : 'btn-primary'}`}
-                    style={{ marginTop: '0.6rem' }}
-                    disabled={registered || contest.phase !== 'upcoming'}
-                    onClick={register}
-                  >
-                    {registered ? <><CheckCircle2 size={14} /> {t('contests.registered')}</> : t('contests.register')}
-                  </button>
+                  {contest.registered ? (
+                    <button className="btn btn-sm btn-ghost" style={{ marginTop: '0.6rem' }} disabled>
+                      <CheckCircle2 size={14} /> {t('contests.registered')}
+                    </button>
+                  ) : (
+                    <a className="btn btn-sm btn-primary" style={{ marginTop: '0.6rem' }} href={`/contest/${cid}/register`}>
+                      {t('contests.register')} <ExternalLink size={12} />
+                    </a>
+                  )}
                 </div>
               </>
             )}
@@ -127,13 +123,16 @@ export default function ContestDetail() {
       {tab === 'announcements' && (
         <section className="glass pad rise">
           <h2 className="card-title"><Megaphone size={16} /> {t('contests.tabAnnouncements')}</h2>
-          {contest.announcements.length === 0 ? (
+          {data.notices.length === 0 ? (
             <div className="empty"><Inbox /> {t('contests.noAnnouncements')}</div>
           ) : (
-            contest.announcements.map((a, i) => (
-              <div key={i} className="announce-item">
-                <span className="announce-date mono">{a.time}</span>
-                <span>{a.text}</span>
+            data.notices.map((n) => (
+              <div key={n.id} className="announce-item" style={{ alignItems: 'flex-start' }}>
+                <span className="announce-date mono">{n.time}</span>
+                <div className="grow">
+                  <div style={{ fontWeight: 600 }}>{n.title}</div>
+                  {n.content && <SafeHtml html={n.content} className="statement statement-html small" />}
+                </div>
               </div>
             ))
           )}
@@ -148,27 +147,29 @@ export default function ContestDetail() {
                 <tr>
                   <th style={{ width: '4rem' }}>{t('contests.contestProblem')}</th>
                   <th>{t('problems.colTitle')}</th>
-                  <th style={{ width: '7rem' }}>{t('problems.colDifficulty')}</th>
                   <th style={{ width: '8rem' }} />
                 </tr>
               </thead>
               <tbody>
-                {contest.problems.map((pid, i) => {
-                  const p = PROBLEMS.find((x) => x.id === pid)
-                  if (!p) return null
-                  return (
-                    <tr key={pid} className="clickable" onClick={() => navigate(`/problems/${pid}`)}>
-                      <td><span className="contest-rule-badge" style={{ width: '1.9rem', height: '1.9rem', fontSize: '0.8rem', borderRadius: '0.5rem' }}>{String.fromCharCode(65 + i)}</span></td>
-                      <td style={{ fontWeight: 600 }}>{pick(p.title, p.titleEn)}</td>
-                      <td><DifficultyTag difficulty={p.difficulty} /></td>
-                      <td style={{ textAlign: 'right' }}>
-                        <Link to={`/problems/${pid}`} className="btn btn-sm btn-ghost" onClick={(e) => e.stopPropagation()}>
-                          {t('common.view')}
-                        </Link>
-                      </td>
-                    </tr>
-                  )
-                })}
+                {problems.map((p) => (
+                  <tr key={p.id} className="clickable" onClick={() => {
+                    if (isMock) navigate(`/problem/${p.id}`)
+                    else window.location.href = `/contest/${cid}/problem/${p.id}`
+                  }}>
+                    <td><span className="contest-rule-badge" style={{ width: '1.9rem', height: '1.9rem', fontSize: '0.8rem', borderRadius: '0.5rem' }}>{String.fromCharCode(65 + p.pos)}</span></td>
+                    <td style={{ fontWeight: 600 }}>{p.title}</td>
+                    <td style={{ textAlign: 'right' }}>
+                      <a
+                        className="btn btn-sm btn-ghost"
+                        href={isMock ? `/problem/${p.id}` : `/contest/${cid}/problem/${p.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {t('common.view')}
+                      </a>
+                      {p.myAcSubmissionId != null && <span className="ac-state done" style={{ marginLeft: 8 }}>✓</span>}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -178,10 +179,15 @@ export default function ContestDetail() {
       {tab === 'standings' && (
         <section className="glass pad rise">
           <h2 className="card-title"><Trophy size={16} /> {t('contests.tabStandings')} · {contest.rule}</h2>
-          {standings.length === 0 ? (
-            <div className="empty"><Inbox /> {t('contests.standingsEmpty')}</div>
+          {standings && standings.length > 0 ? (
+            <StandingsTable rows={standings} contestId={cid} rule={contest.rule} problemCount={problems.length} />
           ) : (
-            <StandingsTable rows={standings} contestId={cid} rule={contest.rule} />
+            <div className="empty">
+              <Inbox /> {standingsError || t('contests.standingsEmpty')}
+              <a className="btn btn-ghost btn-sm" style={{ marginLeft: 8 }} href={`/contest/${cid}/standings`}>
+                <ExternalLink size={12} /> 原站榜单
+              </a>
+            </div>
           )}
         </section>
       )}
@@ -189,8 +195,20 @@ export default function ContestDetail() {
   )
 }
 
-function StandingsTable({ rows, contestId, rule }: { rows: StandingsRow[]; contestId: number; rule: string }) {
+function StandingsTable({
+  rows,
+  contestId,
+  rule,
+  problemCount,
+}: {
+  rows: StandingsRow[]
+  contestId: number
+  rule: string
+  problemCount: number
+}) {
   const { t } = useTranslation()
+  const columnCount = problemCount || rows[0]?.cells.length || 0
+  const letters = Array.from({ length: columnCount }, (_, i) => String.fromCharCode(65 + i))
   return (
     <div className="table-wrap">
       <table className="tbl">
@@ -200,8 +218,8 @@ function StandingsTable({ rows, contestId, rule }: { rows: StandingsRow[]; conte
             <th style={{ minWidth: '8rem' }}>{t('contests.standingsUser')}</th>
             <th style={{ width: '4.5rem', textAlign: 'center' }}>{rule === 'ACM' ? t('contests.standingsSolved') : t('contests.standingsScore')}</th>
             {rule === 'ACM' && <th style={{ width: '5.5rem' }}>{t('contests.standingsPenalty')}</th>}
-            {rows[0]?.cells.map((cell, i) => (
-              <th key={cell.problemId} style={{ textAlign: 'center' }}>{String.fromCharCode(65 + i)}</th>
+            {letters.map((letter) => (
+              <th key={letter} style={{ textAlign: 'center' }}>{letter}</th>
             ))}
           </tr>
         </thead>
@@ -213,22 +231,23 @@ function StandingsTable({ rows, contestId, rule }: { rows: StandingsRow[]; conte
               </td>
               <td><UserLink name={r.userName} /></td>
               <td className="standings-cell" style={{ fontWeight: 700 }}>
-                {rule === 'ACM' ? r.solved : r.score}
-                {rule === 'ACM' && <span className="try">{r.penaltyMinutes}</span>}
+                {rule === 'ACM' ? r.solved : (r.totalScore ?? r.score)}
               </td>
               {rule === 'ACM' && <td className="mono muted">{r.penaltyMinutes}</td>}
               {r.cells.map((cell) => {
-                const solved = cell.solvedAtMin != null
+                if (rule !== 'ACM') {
+                  return (
+                    <td key={cell.problemId} className={`standings-cell ${cell.score > 0 ? 'solved' : 'faint'}`}>
+                      {cell.score > 0 ? cell.score : <MinusCircle size={12} style={{ opacity: 0.35 }} />}
+                    </td>
+                  )
+                }
+                const solved = cell.score > 0
                 return (
-                  <td key={cell.problemId} className={`standings-cell ${solved ? 'solved' : cell.attempts > 0 ? 'tried' : 'faint'}`}>
+                  <td key={cell.problemId} className={`standings-cell ${solved ? 'solved' : 'faint'}`}>
                     {solved ? (
                       <>
                         <CheckCircle2 size={12} style={{ verticalAlign: '-2px' }} /> {cell.solvedAtMin}
-                        <span className="try">×{cell.attempts}</span>
-                      </>
-                    ) : cell.attempts > 0 ? (
-                      <>
-                        <XCircle size={12} style={{ verticalAlign: '-2px' }} /> -{cell.attempts}
                       </>
                     ) : (
                       <MinusCircle size={12} style={{ opacity: 0.35 }} />

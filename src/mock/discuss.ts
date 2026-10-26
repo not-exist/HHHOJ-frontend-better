@@ -1,7 +1,8 @@
 import type { Thread, Comment } from '@/types'
+import { NODES, type NodeKey } from '@/utils/nodes'
 
-export const NODES = ['all', 'solution', 'help', 'share', 'notice', 'lounge'] as const
-export type NodeKey = (typeof NODES)[number]
+export { NODES }
+export type { NodeKey }
 
 function c(id: number, author: string, content: string, createdAt: string, likes: number, replies: Comment[] = []): Comment {
   return { id, author, content, createdAt, likes, replies }

@@ -6,14 +6,15 @@ import VerdictBadge from '@/components/VerdictBadge'
 import CodeEditor from '@/components/CodeEditor'
 import Pagination from '@/components/Pagination'
 import UserLink from '@/components/UserLink'
-import { submissionStore, VERDICT_COLOR } from '@/services/store'
-import { LANGUAGES } from '@/mock/submissions'
-import { PROBLEMS } from '@/mock/problems'
+import { ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
 import { useAuth } from '@/context/AuthContext'
-import { pick, relParts, fmtDateTime } from '@/utils/i18nContent'
+import { api } from '@/services/api'
+import { useApi } from '@/services/useApi'
+import { LANGUAGES } from '@/services/languages'
+import { VERDICT_COLOR } from '@/services/store'
+import { relParts, fmtDateTime } from '@/utils/i18nContent'
 import { showToast } from '@/components/Toast'
 import type { Submission, Verdict } from '@/types'
-import type { CSSProperties } from 'react'
 
 const VERDICT_OPTIONS: (Verdict | 'all')[] = [
   'all', 'Accepted', 'WrongAnswer', 'TimeLimitExceeded', 'MemoryLimitExceeded',
@@ -24,37 +25,67 @@ const PAGE_SIZE = 20
 
 export default function Status() {
   const { t } = useTranslation()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [params, setParams] = useSearchParams()
 
-  const [, setTick] = useState(0)
-  useEffect(() => {
-    const t1 = window.setInterval(() => setTick((v) => v + 1), 30_000)
-    return () => window.clearInterval(t1)
-  }, [])
+  const listRes = useApi(
+    () => (user ? api.submissions({ size: 100 }) : Promise.resolve({ items: [], total: 0 })),
+    [user?.name],
+  )
+  const subs = listRes.data?.items ?? []
 
-  // 订阅实时提交流
-  const [subs, setSubs] = useState<Submission[]>(submissionStore.all)
-  useEffect(() => {
-    const update = () => setSubs(submissionStore.all)
-    update()
-    return submissionStore.subscribe(update)
-  }, [])
-
-  const [fUser, setFUser] = useState('')
+  const [fUser, setFUser] = useState(params.get('submitter') ?? '')
   const [fProblem, setFProblem] = useState('')
   const [fVerdict, setFVerdict] = useState<string>('all')
   const [fLang, setFLang] = useState('all')
   const [mine, setMine] = useState(params.get('mine') === '1')
   const [page, setPage] = useState(1)
   const [detail, setDetail] = useState<Submission | null>(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+
+  // 自己的等待/评测中提交：按原站节奏轮询，直到终态后整页刷新
+  useEffect(() => {
+    if (!user) return
+    const pending = subs
+      .filter((s) => s.userName === user.name && (s.verdict === 'Pending' || s.verdict === 'Judging'))
+      .map((s) => s.id)
+    if (pending.length === 0) return
+    let alive = true
+    let timer = 0
+    const poll = async () => {
+      try {
+        const items = await api.submissionStatus(pending)
+        if (!alive) return
+        if (items.some((i) => i.judged)) listRes.reload()
+        else timer = window.setTimeout(poll, 1000)
+      } catch {
+        if (alive) timer = window.setTimeout(poll, 2000)
+      }
+    }
+    timer = window.setTimeout(poll, 600)
+    return () => {
+      alive = false
+      window.clearTimeout(timer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subs, user?.name])
 
   // 从“我的提交”跳转进来
   const sid = Number(params.get('sid') ?? 0)
   useEffect(() => {
-    if (sid) {
-      const s = submissionStore.byId(sid)
-      if (s) setDetail(s)
+    if (!sid) return
+    let alive = true
+    setDetailLoading(true)
+    api.submission(sid).then(
+      (s) => {
+        if (!alive) return
+        if (s) setDetail(s)
+        setDetailLoading(false)
+      },
+      () => alive && setDetailLoading(false),
+    )
+    return () => {
+      alive = false
     }
   }, [sid])
 
@@ -74,14 +105,31 @@ export default function Status() {
   const rows = filtered.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE)
 
   const relTime = (ts: number) => {
+    if (!ts) return '—'
     const { n, key } = relParts(ts)
     return key === 'justNow' ? t('status.justNow') : t(`status.${key}`, { n })
   }
 
-  const problemTitle = (pid: number) => {
-    const p = PROBLEMS.find((x) => x.id === pid)
-    return p ? pick(p.title, p.titleEn) : `#${pid}`
+  const problemTitle = (s: Submission) => s.problemTitle || `#${s.problemId}`
+
+  const openDetail = async (s: Submission) => {
+    setParams({ sid: String(s.id) })
+    setDetail(s)
+    setDetailLoading(true)
+    try {
+      const full = await api.submission(s.id)
+      if (full) setDetail(full)
+    } catch {
+      /* 列表数据仍可展示 */
+    } finally {
+      setDetailLoading(false)
+    }
   }
+
+  if (authLoading) return <Loading label="读取会话…" />
+  if (!user) return <LoginRequired text="登录后查看评测记录" />
+  if (listRes.loading && !listRes.data) return <Loading label="读取提交记录…" />
+  if (listRes.error) return <ErrorState error={listRes.error} onRetry={listRes.reload} />
 
   return (
     <>
@@ -106,7 +154,7 @@ export default function Status() {
           </select>
           <select className="select" value={fLang} onChange={(e) => { setFLang(e.target.value); setPage(1) }}>
             <option value="all">{t('status.filterLanguage')} · {t('common.all')}</option>
-            {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
+            {Array.from(new Set([...LANGUAGES, ...subs.map((s) => s.language)])).filter((l) => l && l !== '/').map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
           {user && (
             <button className={`btn btn-sm ${mine ? 'btn-primary' : 'btn-ghost'}`} onClick={() => { setMine(!mine); setPage(1) }}>
@@ -134,13 +182,13 @@ export default function Status() {
             </thead>
             <tbody>
               {rows.map((s) => (
-                <tr key={s.id} className="clickable" onClick={() => { setDetail(s); setParams(s.id !== 0 ? { sid: String(s.id) } : {}) }}>
+                <tr key={s.id} className="clickable" onClick={() => void openDetail(s)}>
                   <td className="mono faint">{s.id}</td>
                   <td style={{ fontWeight: 600 }}>
-                    <Link to={`/problems/${s.problemId}`} onClick={(e) => e.stopPropagation()} className="mono faint" style={{ marginRight: 6 }}>
+                    <Link to={`/problem/${s.problemId}`} onClick={(e) => e.stopPropagation()} className="mono faint" style={{ marginRight: 6 }}>
                       #{s.problemId}
                     </Link>
-                    {problemTitle(s.problemId)}
+                    {problemTitle(s)}
                   </td>
                   <td><UserLink name={s.userName} /></td>
                   <td className="verdict-cell">
@@ -152,7 +200,7 @@ export default function Status() {
                   <td className="mono">{s.verdict === 'Pending' || s.verdict === 'Judging' ? '—' : s.score}</td>
                   <td className="mono">{s.timeMs == null ? '—' : t('common.timeMs', { n: s.timeMs })}</td>
                   <td className="mono">{s.memoryMb == null ? '—' : t('common.memoryMb', { n: s.memoryMb })}</td>
-                  <td className="mono">{s.language}</td>
+                  <td className="mono">{s.language === '/' ? '—' : s.language}</td>
                   <td className="small faint" title={fmtDateTime(s.submittedAt)}>{relTime(s.submittedAt)}</td>
                 </tr>
               ))}
@@ -164,12 +212,18 @@ export default function Status() {
       </div>
 
       {/* 提交详情弹窗 */}
-      {detail && <DetailModal sub={detail} onClose={() => { setDetail(null); if (sid) setParams({}) }} />}
+      {detail && (
+        <DetailModal
+          sub={detail}
+          loading={detailLoading}
+          onClose={() => { setDetail(null); if (sid) setParams({}) }}
+        />
+      )}
     </>
   )
 }
 
-function DetailModal({ sub, onClose }: { sub: Submission; onClose: () => void }) {
+function DetailModal({ sub, loading, onClose }: { sub: Submission; loading: boolean; onClose: () => void }) {
   const { t } = useTranslation()
   const { c, g } = VERDICT_COLOR[sub.verdict]
   const busy = sub.verdict === 'Judging' || sub.verdict === 'Pending'
@@ -195,18 +249,23 @@ function DetailModal({ sub, onClose }: { sub: Submission; onClose: () => void })
 
         <div className="row small faint" style={{ marginBottom: '0.6rem', gap: '0.4rem' }}>
           <FileCode2 size={13} />
-          <span>{sub.language} · {fmtDateTime(sub.submittedAt)}</span>
+          <span>{sub.language === '/' ? '—' : sub.language} · {fmtDateTime(sub.submittedAt)}</span>
           {sub.testcases.length > 0 && (
             <span className="row" style={{ gap: '0.3rem', color: c }}>
               <ListChecks size={13} />
               {t('status.modalTestcases')} · {sub.testcases.length}
             </span>
           )}
+          {loading && <span className="faint">读取详情…</span>}
         </div>
 
-        <div style={{ maxHeight: '38dvh', overflowY: 'auto', marginBottom: '0.9rem' }}>
-          <CodeEditor value={sub.code} language={sub.language} height="auto" />
-        </div>
+        {sub.codeUnavailable && sub.code === '' ? (
+          <div className="empty" style={{ padding: '1.2rem' }}>无权查看代码，或该提交为文件提交。</div>
+        ) : (
+          <div style={{ maxHeight: '38dvh', overflowY: 'auto', marginBottom: '0.9rem' }}>
+            <CodeEditor value={sub.code} language={sub.language} height="auto" />
+          </div>
+        )}
 
         {sub.testcases.length > 0 && (
           <div>

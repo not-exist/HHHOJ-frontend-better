@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import MainLayout from '@/layouts/MainLayout'
 import { submissionStore } from '@/services/store'
+import { isMock } from '@/services/api'
 import Home from '@/pages/Home'
 import Problems from '@/pages/Problems'
 import ProblemDetail from '@/pages/ProblemDetail'
@@ -24,6 +26,25 @@ function ScrollToTop() {
   return null
 }
 
+function usePageTitle() {
+  const { pathname } = useLocation()
+  const { t } = useTranslation()
+  useEffect(() => {
+    let key = 'nav.home'
+    if (/^\/problems/.test(pathname)) key = 'nav.problems'
+    else if (/^\/problem\//.test(pathname)) key = 'problem.tabStatement'
+    else if (/^\/submissions/.test(pathname)) key = 'nav.status'
+    else if (/^\/contests/.test(pathname)) key = 'nav.contests'
+    else if (/^\/contest\//.test(pathname)) key = 'contests.tabStandings'
+    else if (/^\/blogs/.test(pathname)) key = 'nav.discuss'
+    else if (/^\/post\//.test(pathname)) key = 'nav.discuss'
+    else if (/^\/user\/profile\//.test(pathname)) key = 'nav.profile'
+    else if (/^\/login/.test(pathname)) key = 'nav.login'
+    else if (/^\/register/.test(pathname)) key = 'nav.register'
+    document.title = `${t(key)} · TwilightOJ`
+  }, [pathname, t])
+}
+
 /** 进站加载遮罩：仅每个会话首次进入时展示 */
 function useBooted() {
   const [booted, setBooted] = useState(() => {
@@ -40,7 +61,7 @@ function useBooted() {
       try {
         sessionStorage.setItem('toj.booted', '1')
       } catch { /* ignore */ }
-    }, 1100)
+    }, 900)
     document.fonts?.ready.then(() => {
       setBooted(true)
       try {
@@ -54,9 +75,10 @@ function useBooted() {
 
 export default function App() {
   const booted = useBooted()
+  usePageTitle()
   useEffect(() => {
-    // 启动全站“实时”评测流（模拟）
-    submissionStore.startEngine()
+    // 演示模式才启动模拟评测流；真实模式由 HHHOJ 后端判题
+    if (isMock) submissionStore.startEngine()
   }, [])
   return (
     <>
@@ -74,13 +96,15 @@ export default function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/problems" element={<Problems />} />
-          <Route path="/problems/:id" element={<ProblemDetail />} />
-          <Route path="/status" element={<Status />} />
+          <Route path="/problem/:id" element={<ProblemDetail />} />
+          <Route path="/submissions" element={<Status />} />
           <Route path="/contests" element={<Contests />} />
-          <Route path="/contests/:id" element={<ContestDetail />} />
-          <Route path="/discuss" element={<Discuss />} />
-          <Route path="/discuss/:id" element={<DiscussThread />} />
-          <Route path="/user/:name" element={<UserProfile />} />
+          <Route path="/contest/:id" element={<ContestDetail />} />
+          <Route path="/contest/:id/standings" element={<ContestDetail initialTab="standings" />} />
+          <Route path="/blogs" element={<Discuss />} />
+          <Route path="/blogs/:id" element={<DiscussThread />} />
+          <Route path="/post/:id" element={<DiscussThread />} />
+          <Route path="/user/profile/:name" element={<UserProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="*" element={<NotFound />} />

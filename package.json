@@ -1,16 +1,19 @@
 {
-  "name": "twilight-oj",
+  "name": "hhhoj-twilight-takeover",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Twilight-styled Online Judge frontend",
+  "description": "Tampermonkey userscript that mounts the TwilightOJ frontend over HHHOJ",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.0",
@@ -21,19 +24,24 @@
     "@lezer/highlight": "^1.2.1",
     "@uiw/codemirror-themes": "^4.23.5",
     "@uiw/react-codemirror": "^4.23.5",
+    "blueimp-md5": "^2.19.0",
+    "dompurify": "^3.4.17",
     "i18next": "^23.16.4",
+    "katex": "^0.16.47",
     "lucide-react": "^0.454.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.1.1",
-    "react-router-dom": "^6.30.0",
-    "recharts": "^2.13.3"
+    "react-router-dom": "^6.30.0"
   },
   "devDependencies": {
+    "@types/blueimp-md5": "^2.18.2",
+    "@types/katex": "^0.16.8",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.3.3",
+    "@vitejs/plugin-react": "^4.7.0",
     "typescript": "~5.6.3",
-    "vite": "^5.4.10"
+    "vite": "^5.4.21",
+    "vite-plugin-monkey": "^5.0.9"
   }
 }

@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom'
-import { avatarStyle, hueOf, ratingTier } from '@/mock/users'
-import { USERS } from '@/mock/users'
-
-const TIER_VARS = ['--r-newbie', '--r-pupil', '--r-specialist', '--r-expert', '--r-master', '--r-grand']
+import { avatarStyle, ratingTier, RATING_VARS } from '@/utils/user'
 
 /** 彩色用户名（rating 等级配色）+ 可选头像 */
-export default function UserLink({ name, size }: { name: string; size?: number }) {
-  const tier = ratingTier(name.length ? ratingOf(name) : 0)
+export default function UserLink({ name, size, rating }: { name: string; size?: number; rating?: number }) {
+  const color = rating == null ? 'var(--primary)' : `var(${RATING_VARS[ratingTier(rating)]})`
   return (
-    <Link to={`/user/${encodeURIComponent(name)}`} className="user-link" style={{ '--rc': `var(${TIER_VARS[tier]})` } as React.CSSProperties}>
+    <Link
+      to={`/user/profile/${encodeURIComponent(name)}`}
+      className="user-link"
+      style={{ '--rc': color } as React.CSSProperties}
+    >
       {size != null && (
         <span className="avatar" style={avatarStyle(name, size)}>
           {name.slice(0, 1).toUpperCase()}
@@ -20,16 +21,14 @@ export default function UserLink({ name, size }: { name: string; size?: number }
 }
 
 /** 仅用户名带等级配色（不做链接时用） */
-export function ColoredName({ name }: { name: string }) {
-  const tier = ratingTier(ratingOf(name))
+export function ColoredName({ name, rating }: { name: string; rating?: number }) {
+  const color = rating == null ? 'var(--primary)' : `var(${RATING_VARS[ratingTier(rating)]})`
   return (
-    <Link to={`/user/${encodeURIComponent(name)}`} style={{ color: `var(${TIER_VARS[tier]})`, fontWeight: 600 }}>
+    <Link
+      to={`/user/profile/${encodeURIComponent(name)}`}
+      style={{ color, fontWeight: 600 }}
+    >
       {name}
     </Link>
   )
-}
-
-// 用户名 → rating：直接查 mock 名册，找不到按哈希给一个稳定档
-function ratingOf(name: string): number {
-  return USERS.find((u) => u.name === name)?.rating ?? 900 + (hueOf(name) % 600)
 }

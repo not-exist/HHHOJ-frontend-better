@@ -127,7 +127,7 @@
   },
   "status": {
     "title": "评测状态",
-    "liveHint": "实时刷新中 — 全站提交流",
+    "liveHint": "自动轮询自己的评测状态",
     "filterUser": "用户名",
     "filterProblem": "题号",
     "filterVerdict": "评测结果",
@@ -303,6 +303,8 @@
     "github": "GitHub",
     "api": "API",
     "style": "Twilight 风格指南",
+    "ranklist": "排行榜",
+    "announcements": "公告",
     "copyright": "© 2026 TwilightOJ · 基于 Twilight 设计语言构建"
   },
   "notfound": {

@@ -1,61 +1,100 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
-import type { OJUser } from '@/types'
-import { USERS, USER_MAP } from '@/mock/users'
-import { loadJSON, saveJSON, LS_KEYS } from '@/services/persist'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import type { OJUser, UserRole } from '@/types'
+import { api, type RegisterInput, type SessionUser } from '@/services/api'
 
 interface AuthCtx {
   user: OJUser | null
-  login: (name: string) => OJUser
-  logout: () => void
+  loading: boolean
+  login: (username: string, password: string) => Promise<OJUser>
+  register: (input: RegisterInput) => Promise<string>
+  logout: () => Promise<void>
+  refresh: () => Promise<void>
 }
 
 const Ctx = createContext<AuthCtx | null>(null)
 
-/** 演示版鉴权：同名即登录既有 mock 用户，否则创建临时档案 */
-function resolveProfile(name: string): OJUser {
-  const existing = USER_MAP.get(name)
-  if (existing) return existing
+const ROLE_LABEL: Record<UserRole, string> = {
+  pending: '待审核',
+  user: '用户',
+  admin: '管理员',
+  teacher: '教师',
+  developer: '开发者',
+}
+
+export function roleLabel(role: UserRole | undefined): string {
+  return role ? ROLE_LABEL[role] : ''
+}
+
+/** 会话信息只有用户名/rating/用户组；其余档案字段留空，资料页再按需读真实接口 */
+function toOJUser(session: SessionUser): OJUser {
   return {
-    id: 9000 + name.length,
-    name,
-    bio: '这位选手很神秘，什么都没有留下。',
-    bioEn: 'A mysterious solver.',
-    rating: 1200,
+    id: 0,
+    name: session.username,
+    bio: '',
+    bioEn: '',
+    rating: session.rating,
     acCount: 0,
     submissionCount: 0,
-    joinedAt: new Date().toISOString().slice(0, 10),
-    school: '—',
-    ratingHistory: [1200],
+    joinedAt: '',
+    school: '',
+    ratingHistory: [session.rating],
     avatarHue: 0,
+    role: session.role,
+    email: session.email,
+    groups: session.groups,
   }
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<OJUser | null>(() => {
-    const name = loadJSON<string | null>(LS_KEYS.user, null)
-    return name ? resolveProfile(name) : null
-  })
+  const [user, setUser] = useState<OJUser | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const login = useCallback((name: string) => {
-    const profile = resolveProfile(name.trim())
-    saveJSON(LS_KEYS.user, profile.name)
-    setUser(profile)
-    return profile
+  const refresh = useCallback(async () => {
+    try {
+      const session = await api.auth.me()
+      setUser(session ? toOJUser(session) : null)
+    } catch {
+      setUser(null)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
-  const logout = useCallback(() => {
-    saveJSON(LS_KEYS.user, null)
-    setUser(null)
+  useEffect(() => {
+    void refresh()
+  }, [refresh])
+
+  const login = useCallback(async (username: string, password: string) => {
+    const session = await api.auth.login(username, password)
+    const mapped = toOJUser(session)
+    setUser(mapped)
+    return mapped
   }, [])
 
-  const value = useMemo(() => ({ user, login, logout }), [user, login, logout])
+  const register = useCallback(async (input: RegisterInput) => {
+    const message = await api.auth.register(input)
+    // 演示模式会直接建立会话；真实模式注册后仍需管理员审核，refresh 只会得到 null
+    await refresh()
+    return message
+  }, [refresh])
+
+  const logout = useCallback(async () => {
+    try {
+      await api.auth.logout()
+    } finally {
+      setUser(null)
+    }
+  }, [])
+
+  const value = useMemo(
+    () => ({ user, loading, login, register, logout, refresh }),
+    [user, loading, login, register, logout, refresh],
+  )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
 
 export function useAuth(): AuthCtx {
-  const v = useContext(Ctx)
-  if (!v) throw new Error('useAuth must be used within AuthProvider')
-  return v
+  const value = useContext(Ctx)
+  if (!value) throw new Error('useAuth must be used within AuthProvider')
+  return value
 }
-
-export { USERS }

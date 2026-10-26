@@ -4,20 +4,25 @@ import { useTranslation } from 'react-i18next'
 import { Search, RotateCcw, Inbox } from 'lucide-react'
 import DifficultyTag from '@/components/DifficultyTag'
 import Pagination from '@/components/Pagination'
-import { PROBLEMS } from '@/mock/problems'
+import { ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
 import { DIFFICULTY_KEYS } from '@/types'
-import { submissionStore } from '@/services/store'
 import { useAuth } from '@/context/AuthContext'
+import { api, isAuthError } from '@/services/api'
+import { useApi } from '@/services/useApi'
 import { pick } from '@/utils/i18nContent'
 
 const PAGE_SIZE = 12
 
-const ALL_TAGS = Array.from(new Set(PROBLEMS.flatMap((p) => p.tags)))
-
 export default function Problems() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
+
+  const problems = useApi(() => api.problems(), [])
+  const mySubs = useApi(
+    () => (user ? api.submissions({ submitter: user.name, size: 100 }) : Promise.resolve({ items: [], total: 0 })),
+    [user?.name],
+  )
 
   const [q, setQ] = useState('')
   const [diff, setDiff] = useState<string>('all')
@@ -25,32 +30,34 @@ export default function Problems() {
   const [state, setState] = useState<'all' | 'solved' | 'tried'>('all')
   const [page, setPage] = useState(1)
 
-  // 我的状态：从全站提交记录推导
+  const list = problems.data ?? []
+  const allTags = useMemo(() => Array.from(new Set(list.flatMap((p) => p.tags))).slice(0, 40), [list])
+
+  // 我的状态：AC 直接看题库的 my_best_ac_submission_id，尝试中的从最近提交推导
   const myState = useMemo(() => {
     const solved = new Set<number>()
     const tried = new Set<number>()
-    if (!user) return { solved, tried }
-    for (const s of submissionStore.all) {
-      if (s.userName !== user.name) continue
+    for (const p of list) if (p.myBestAcSubmissionId != null) solved.add(p.id)
+    for (const s of mySubs.data?.items ?? []) {
       if (s.verdict === 'Accepted') solved.add(s.problemId)
       else tried.add(s.problemId)
     }
     return { solved, tried }
-  }, [user])
+  }, [list, mySubs.data])
 
   const filtered = useMemo(() => {
-    return PROBLEMS.filter((p) => {
+    return list.filter((p) => {
       if (q) {
         const needle = q.toLowerCase()
-        if (!String(p.id).includes(needle) && !p.title.toLowerCase().includes(needle) && !p.titleEn.toLowerCase().includes(needle)) return false
+        if (!String(p.id).includes(needle) && !p.title.toLowerCase().includes(needle)) return false
       }
       if (diff !== 'all' && String(p.difficulty) !== diff) return false
       if (tag && !p.tags.includes(tag)) return false
       if (state === 'solved' && !myState.solved.has(p.id)) return false
-      if (state === 'tried' && myState.solved.has(p.id) && !myState.tried.has(p.id)) return false
+      if (state === 'tried' && !myState.tried.has(p.id)) return false
       return true
     })
-  }, [q, diff, tag, state, myState])
+  }, [list, q, diff, tag, state, myState])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const curPage = Math.min(page, totalPages)
@@ -64,11 +71,16 @@ export default function Problems() {
     setPage(1)
   }
 
+  if (authLoading) return <Loading label="读取会话…" />
+  if (!user) return <LoginRequired text="登录后查看题库" />
+  if (problems.loading) return <Loading label="读取题库…" />
+  if (problems.error) return <ErrorState error={problems.error} onRetry={problems.reload} />
+
   return (
     <>
       <div className="row-between rise" style={{ marginBottom: '1rem' }}>
         <h1 style={{ fontSize: '1.5rem' }}>{t('problems.title')}</h1>
-        <span className="small faint">{filtered.length} / {PROBLEMS.length}</span>
+        <span className="small faint">{filtered.length} / {list.length}</span>
       </div>
 
       <div className="glass pad rise" style={{ marginBottom: '1rem' }}>
@@ -94,16 +106,18 @@ export default function Problems() {
             </button>
           )}
         </div>
-        <div className="row wrap" style={{ marginTop: '0.7rem', gap: '0.35rem' }}>
-          <button className={`tag-chip ${tag === null ? 'active' : ''}`} onClick={() => { setTag(null); setPage(1) }}>
-            {t('common.all')}
-          </button>
-          {ALL_TAGS.map((tg) => (
-            <button key={tg} className={`tag-chip ${tag === tg ? 'active' : ''}`} onClick={() => { setTag(tag === tg ? null : tg); setPage(1) }}>
-              {tg}
+        {allTags.length > 0 && (
+          <div className="row wrap" style={{ marginTop: '0.7rem', gap: '0.35rem' }}>
+            <button className={`tag-chip ${tag === null ? 'active' : ''}`} onClick={() => { setTag(null); setPage(1) }}>
+              {t('common.all')}
             </button>
-          ))}
-        </div>
+            {allTags.map((tg) => (
+              <button key={tg} className={`tag-chip ${tag === tg ? 'active' : ''}`} onClick={() => { setTag(tag === tg ? null : tg); setPage(1) }}>
+                {tg}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="glass pad rise" style={{ animationDelay: '0.06s' }}>
@@ -121,18 +135,18 @@ export default function Problems() {
             </thead>
             <tbody>
               {rows.map((p) => {
-                const rate = Math.round((p.solved / Math.max(1, p.submissions)) * 100)
+                const rate = p.countsKnown === false ? null : Math.round((p.solved / Math.max(1, p.submissions)) * 100)
                 return (
-                  <tr key={p.id} className="clickable" onClick={() => navigate(`/problems/${p.id}`)}>
+                  <tr key={p.id} className="clickable" onClick={() => navigate(`/problem/${p.id}`)}>
                     <td className="mono faint">#{p.id}</td>
                     <td style={{ fontWeight: 600 }}>{pick(p.title, p.titleEn)}</td>
-                    <td><DifficultyTag difficulty={p.difficulty} /></td>
+                    <td>{p.difficultyKnown === false ? <span className="faint">—</span> : <DifficultyTag difficulty={p.difficulty} />}</td>
                     <td>
                       <span className="row wrap" style={{ gap: '0.3rem' }}>
                         {p.tags.slice(0, 3).map((tg) => <span key={tg} className="tag-chip">{tg}</span>)}
                       </span>
                     </td>
-                    <td className="mono">{rate}%</td>
+                    <td className="mono">{rate == null ? '—' : `${rate}%`}</td>
                     <td style={{ textAlign: 'center' }}>
                       {myState.solved.has(p.id) ? (
                         <span className="ac-state done" title={t('problems.stateSolved')}>✓</span>

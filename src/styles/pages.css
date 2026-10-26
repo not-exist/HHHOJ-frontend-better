@@ -141,6 +141,87 @@
   margin-top: 0;
 }
 
+/* HHHOJ 原始题面/博客 HTML */
+.statement-html {
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.statement-html > :first-child {
+  margin-top: 0;
+}
+.statement-html h1,
+.statement-html h2,
+.statement-html h3,
+.statement-html h4 {
+  margin: 1.15rem 0 0.45rem;
+  color: var(--primary);
+  font-size: 1.05rem;
+}
+.statement-html h1 {
+  font-size: 1.2rem;
+}
+.statement-html p {
+  margin: 0.55rem 0;
+}
+.statement-html ul,
+.statement-html ol {
+  margin: 0.55rem 0;
+  padding-left: 1.5rem;
+}
+.statement-html pre {
+  margin: 0.7rem 0;
+  padding: 0.8rem 0.95rem;
+  overflow-x: auto;
+  background: var(--glass-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+.statement-html code {
+  padding: 0.1em 0.35em;
+  background: var(--primary-soft);
+  border-radius: 0.35rem;
+  font-size: 0.86em;
+}
+.statement-html pre code {
+  padding: 0;
+  background: transparent;
+}
+.statement-html table {
+  width: 100%;
+  margin: 0.8rem 0;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.statement-html th,
+.statement-html td {
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.statement-html th {
+  background: var(--glass-soft);
+}
+.statement-html img {
+  max-width: 100%;
+  height: auto;
+  margin: 0.5rem auto;
+  border-radius: var(--radius-sm);
+}
+.statement-html blockquote {
+  margin: 0.7rem 0;
+  padding: 0.4rem 0.9rem;
+  border-left: 3px solid var(--primary);
+  background: var(--glass-soft);
+  color: var(--text-2);
+}
+.statement-html a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+
 .submit-bar {
   display: flex;
   flex-wrap: wrap;
@@ -320,6 +401,13 @@
 }
 .comment-item:last-child {
   border-bottom: none;
+}
+.comment-content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.comment-content p {
+  margin: 0;
 }
 .comment-item .avatar {
   width: 2.3rem;

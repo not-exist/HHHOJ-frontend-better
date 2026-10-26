@@ -1,57 +1,135 @@
-# TwilightOJ
+# HHHOJ × TwilightOJ 接管脚本
 
-一个参考 [Spr-Aachen/Twilight](https://github.com/Spr-Aachen/Twilight) 设计语言的**在线评测系统（OJ）前端**。当前为纯前端实现：所有数据来自内置 mock，通过统一的服务层隔离，后续可直接替换为真实 API。
+一个 Tampermonkey 用户脚本：访问 HHHOJ 时，把整页替换为 [TwilightOJ](https://github.com/Spr-Aachen/Twilight) 风格的 React OJ 界面，数据全部来自 HHHOJ 真实 `/api/*`。TwilightOJ 没有覆盖的页面（博客写作、私信、管理后台、ranklist、提交详情等）会**自动回退原站**，不损失功能。
 
-![tech](https://img.shields.io/badge/React_18-Vite_5-61dafb) ![lang](https://img.shields.io/badge/TypeScript-strict-3178c6) ![style](https://img.shields.io/badge/Design-Twilight-8b5cf6)
+- 构建产物：`dist/hhhoj-twilight.user.js`（单文件，约 2.7 MB / gzip 约 600 KB）
+- 数据源：HHHOJ 本地 `http://127.0.0.1:18080`（生产域名见下方 `@match` 配置）
+- 设计基线：仓库 `base` 分支的 TwilightOJ（React 18 + Vite 5 + CodeMirror 6 + i18next）
 
-## 快速开始
+## 安装
 
 ```bash
 pnpm install
-pnpm dev        # http://localhost:5173
-pnpm build      # 生产构建（先 tsc 类型检查）
-pnpm preview
+pnpm build
 ```
 
-> 演示环境：任意用户名 / 密码均可登录。
+把 `dist/hhhoj-twilight.user.js` 拖进 Tampermonkey / Violentmonkey 的“添加新脚本”页面，保存后访问：
 
-## 功能（核心十件套）
+```
+http://127.0.0.1:18080/
+```
 
-| 路由 | 页面 | 亮点 |
+生产域名需要先改 `vite.config.ts` 里的 `userscript.match`：
+
+```ts
+match: ['https://your-hhhoj-domain.example/*', 'http://127.0.0.1:18080/*', 'http://localhost:18080/*'],
+```
+
+> 仓库里的 `https://hhhoj.example.com/*` 只是占位符，直接安装不会匹配任何真实生产站。
+
+## 开发
+
+```bash
+pnpm dev        # vite-plugin-monkey dev server，按提示安装 dev 版用户脚本
+pnpm build      # 类型检查 + 单文件用户脚本
+pnpm typecheck  # 只做类型检查
+```
+
+`pnpm dev` 的根页面是 vite-plugin-monkey 的**脚本安装页**，不是应用页面；安装 dev 脚本后访问 `127.0.0.1:18080`，主应用会从 dev server 加载并支持 HMR。
+
+### 演示 / mock 模式
+
+```text
+http://127.0.0.1:18080/?__mock=1    # 使用内置 mock 数据（保留模拟评测引擎）
+http://127.0.0.1:18080/?__mock=0    # 关闭 mock
+```
+
+mock 模式标记存在 `sessionStorage`，进入后当前标签页内继续生效。独立打开 `index.html`（不经过接管层）时，开发模式也默认使用 mock。
+
+## 接管范围
+
+| 原站路径 | TwilightOJ 页面 | 数据源 |
 |---|---|---|
-| `/` | 首页 | Ken Burns 壁纸轮播 + 打字机标语 + 波浪、公告 / **排行榜** / 近期比赛 |
-| `/problems` | 题库 | 关键词 / 难度 / 标签 / 我的状态筛选，通过率与状态标记 |
-| `/problems/:id` | 题目详情 | 双语题面选项卡、样例复制、时空限制侧栏、内嵌代码提交 |
-| `/status` | 评测状态 | **实时提交流**（模拟评测机：Pending → Judging → 终态）、七种结果徽章、代码 + 测试点详情弹窗 |
-| `/contests` | 比赛列表 | 进行中 / 未开始 / 已结束，实时倒计时 |
-| `/contests/:id` | 比赛详情 | 报名、公告、题目、**ACM/OI 榜**（罚时、尝试次数、奖牌配色） |
-| `/discuss` | 讨论区 | 节点分类（题解 / 求助 / 分享 / 公告 / 灌水）、帖子与嵌套评论、点赞 |
-| `/user/:name` | 个人主页 | Rating 曲线（recharts）、统计瓦片、已解决题目 / 提交 / 帖子 |
-| `/login` `/register` | 登录注册 | 玻璃卡片，mock 鉴权持久化 |
-| 设置抽屉 | 全局 | **明暗切换 + 色相滑块实时换色 + 粒子开关 + 中英双语** |
+| `/` | Home | `/api/home` + `/api/contests` |
+| `/problems` | Problems | `/api/problems`（需登录） |
+| `/problem/:id` | ProblemDetail | `/api/problems/:id`，支持 `?contest_id=` |
+| `/submissions` | Status | `/api/submissions` + `/api/submissions/status` 轮询 |
+| `/contests` | Contests | `/api/contests` |
+| `/contest/:id`、`/contest/:id/standings` | ContestDetail | dashboard / standings |
+| `/blogs`、`/blogs/:id`、`/post/:id` | Discuss / DiscussThread | `/api/blogs(/:id)` |
+| `/user/profile/:username` | UserProfile | `/api/users/:username` + 提交/博客补充 |
+| `/login`、`/register` | Login / Register | `/api/auth/*` |
 
-## Twilight 设计语言移植
+**表外路径全部回退原站**，包括但不限于：
 
-- **单色相主题系统**：全部强调色由 `--hue`（默认 `205` · 晴空蓝）派生，设置抽屉拖动滑块全站实时换色；
-- **明暗双模式**：默认浅色（清新），深色为暗夜 hue 底色；
-- **玻璃拟态**：半透明 + `backdrop-blur` + 1px 描边 + 大圆角卡片，悬浮胶囊导航栏；
-- **氛围特效**：canvas 漂浮粒子（随色相变化）、进站 Loading 遮罩（每会话一次）、页面进场 / 卡片 hover 动效；
-- **横幅**：三层径向渐变壁纸（Ken Burns 缓推）+ 打字机副标题 + 无缝循环波浪。
+- `/faq`、`/announcements`、`/ranklist`、`/rankproblemlist`
+- `/submission/:id`、`/contest/:id/submissions`、`/contest/:id/register`
+- `/blog/:username/...` 博客写作、`/user/msg` 私信、`/super-manage/...` 管理后台、捐赠页面
+- `/contest/:contest_id/problem/:id` 比赛内题目页（保留原站的比赛上下文与提交限制）
 
-## 目录结构
+路由门在 `src/takeover.ts` 中，路径不在表内时脚本不会碰 DOM，原站照常启动。
+
+## 逃生舱
+
+任意时刻都可以切回原站，且不会丢失任何功能：
+
+| 方式 | 行为 |
+|---|---|
+| `?native=1` | 持久设置为原站模式并 reload |
+| `?takeover=1` | 清除原站模式并 reload，恢复接管 |
+| GM 菜单 → 切换为 HHHOJ 原站界面 | 同 `?native=1` |
+| GM 菜单 → 重新启用 TwilightOJ 接管 | 同 `?takeover=1` |
+| 设置抽屉 → 切换到 HHHOJ 原站 | 同 `?native=1` |
+
+原站模式标记存在 GM 存储 `toj.takeover.native`；没有 GM 存储时退回 `localStorage`。
+
+## 接管层原理
+
+1. **document-start 路由门**：路径不在接管表内 → 直接退出。
+2. **阻止原站启动**：临时让 `document.getElementById('root')` 返回 `null`，原站内联 shell 与 `main.tsx` 在挂载时抛错跳过；`#root` 出现即移除。
+3. **样式隔离**：解析期间用 MutationObserver 移除非本脚本的 `<link rel=stylesheet>` / `<style>`；挂载前整体清扫一次并断开 observer，避免误伤 CodeMirror 的运行时样式。
+4. **延迟求值**：React、CodeMirror、KaTeX 通过动态 import 在 DOMContentLoaded 后才求值（CodeMirror 在模块初始化时会读 `document.documentElement`）；vite-plugin-monkey 使用 inline SystemJS 保证动态 import 真正延迟。
+5. **挂载**：清空 `<body>`，挂载 `<div id="twilight-root">`，完整主题 CSS 注入到带 `data-twilight-style="full"` 的 `<style>` 中。
+
+详细说明见 [docs/takeover.md](docs/takeover.md)。
+
+## 数据映射
+
+- 时间：HHHOJ 的 `YYYY-MM-DD HH:MM:SS` 按 `Asia/Shanghai` 解析。
+- 内存：HHHOJ 的 `used_memory` / 测试点 `memory` 是 KB，界面统一换算成 MB。
+- 难度：HHHOJ 没有题目难度字段，按通过率估算六档（仅用于视觉分档，文档中标注为估算）。
+- 评测结果：`Waiting` → Pending，`Judging` → Judging，`Judged` + score → Accepted / WrongAnswer；`result_error` 含 `compile` → CompileError，否则 RuntimeError；提交详情优先用测试点 XML 的 `info` 精修。
+- 语言、题面 HTML、博客 HTML、评论 HTML 等逐字段对照见 [docs/api-mapping.md](docs/api-mapping.md)。
+- 题面/博客/评论 HTML 一律经 DOMPurify 消毒；`$...$` / `$$...$$` 用 KaTeX 的 **MathML** 输出，不依赖 KaTeX 字体文件。
+
+## 已知限制
+
+- 多文件 / 文本文件提交的题目在接管页只显示提示并提供“在原站提交”链接；单源码文件提交完整可用。
+- 比赛内题目详情、比赛报名、提交详情等仍走原站（表外路径）。
+- 提交记录页读取最近 100 条后在浏览器内筛选/分页；HHHOJ 的 verdict 不是服务端筛选字段。
+- 博客评论一次加载前 20 条，更多请回原站。
+- 生产部署前需自行替换 `@match` 占位域名。
+
+## 目录
 
 ```
 src/
-  styles/        tokens.css（设计令牌）/ base / components / pages / animations
-  context/       ThemeContext（hue/mode/particles）、AuthContext
-  i18n/          react-i18next，zh.json + en.json
-  mock/          problems / contests / submissions / users / discuss / news
-  services/      api.ts（假 API）、store.ts（提交存储 + 实时评测引擎）、persist.ts
-  components/    NavBar、Particles、Waves、CodeEditor、VerdictBadge、…
-  layouts/       MainLayout
-  pages/         与路由一一对应
+  takeover.ts        路由门 / 逃生舱 / 原站启动压制 / 样式清扫 / 挂载
+  userscript.ts      vite-plugin-monkey 入口（document-start）
+  bootstrap.tsx      React 应用、主题、AuthProvider、CSS 注入
+  services/
+    api/             index.ts（real/mock 选择）、real.ts、mock.ts、http.ts、types.ts
+    gm.ts            GM 存储与菜单（无 GM 时 localStorage 兜底）
+    useApi.ts       页面级异步读取 hook
+    md5.ts           HHHOJ 客户端加盐 MD5
+  pages/             接管后的 10 个页面
+  components/        NavBar、CodeEditor、RatingChart、SafeHtml、AsyncState…
+  mock/              演示数据与模拟评测引擎
+docs/
+  takeover.md        接管架构与生命周期
+  api-mapping.md     字段映射对照表
 ```
 
-## 接真实后端
+## 致谢
 
-所有页面仅依赖 `src/services/api.ts` 与 `submissionStore`。将 mock 实现替换为真实请求（保持返回类型为 `src/types.ts` 中的接口）即可，无需改动页面组件。
+界面与设计语言来自 [Spr-Aachen/Twilight](https://github.com/Spr-Aachen/Twilight)；数据与交互对齐 [HHHOJ](https://github.com/quzhou-no-2-school/HHHOJ)（基于 [UOJ](https://github.com/vfleaking/uoj)）。
