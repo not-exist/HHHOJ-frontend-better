@@ -1,0 +1,469 @@
+/* ============================================================
+ * TwilightOJ — Page-specific styles
+ * ============================================================ */
+
+/* ---------------- 首页 ---------------- */
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21rem;
+  gap: 1.25rem;
+  align-items: start;
+  margin-top: 1.25rem;
+}
+@media (max-width: 62rem) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+}
+@media (max-width: 34rem) {
+  .home-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.announce-item {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px dashed var(--border);
+}
+.announce-item:last-child {
+  border-bottom: none;
+}
+.announce-date {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-3);
+  padding-top: 0.15em;
+}
+
+.hot-problem {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--radius-md);
+}
+.hot-problem .rank-no {
+  width: 1.7rem;
+  height: 1.7rem;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--on-primary);
+  background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+}
+.hot-problem:nth-child(2) .rank-no {
+  background: linear-gradient(135deg, hsl(28 90% 60%), hsl(16 90% 58%));
+}
+.hot-problem:nth-child(3) .rank-no {
+  background: linear-gradient(135deg, hsl(45 90% 58%), hsl(28 90% 58%));
+}
+
+.profile-mini {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.profile-mini .avatar {
+  width: 3.2rem;
+  height: 3.2rem;
+  font-size: 1.2rem;
+}
+
+/* ---------------- 题库 ---------------- */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+.filter-bar .input {
+  flex: 1 1 13rem;
+  max-width: 22rem;
+}
+.filter-bar .select {
+  flex: 0 0 9.5rem;
+}
+
+.ac-state {
+  font-size: 1.05rem;
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+}
+.ac-state.done {
+  color: var(--v-acced);
+}
+.ac-state.tried {
+  color: var(--v-tle);
+}
+
+/* ---------------- 题目详情 ---------------- */
+.problem-header h1 {
+  font-size: 1.45rem;
+}
+.meta-list {
+  display: grid;
+  gap: 0.55rem;
+  font-size: 0.86rem;
+}
+.meta-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+.meta-list dt {
+  color: var(--text-3);
+}
+.meta-list dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+.statement h2 {
+  font-size: 1.05rem;
+  margin: 1.1rem 0 0.4rem;
+  color: var(--primary);
+}
+.statement h2:first-child {
+  margin-top: 0;
+}
+
+.submit-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0.9rem 0;
+}
+.submit-bar .select {
+  flex: 0 0 12rem;
+}
+
+/* ---------------- 评测状态 ---------------- */
+.status-filter {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr) auto;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+@media (max-width: 52rem) {
+  .status-filter {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.verdict-cell .detail-hint {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+/* 测试点表格 */
+.testcase-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+}
+.testcase-tbl th,
+.testcase-tbl td {
+  padding: 0.35rem 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ---------------- 比赛 ---------------- */
+.contest-cards {
+  display: grid;
+  gap: 0.9rem;
+}
+.contest-card {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1.05rem 1.3rem;
+}
+.contest-rule-badge {
+  flex-shrink: 0;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: var(--radius-md);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--on-primary);
+  background: linear-gradient(135deg, var(--primary), hsl(calc(var(--hue) + 60) 80% 60%));
+  box-shadow: 0 4px 14px var(--primary-glow);
+}
+.contest-card h3 {
+  font-size: 1.02rem;
+}
+.contest-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  font-size: 0.8rem;
+  color: var(--text-2);
+  margin-top: 0.25rem;
+}
+.contest-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.contest-meta svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  color: var(--text-3);
+}
+
+.contest-hero {
+  padding: 1.5rem 1.6rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+.contest-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(24rem 14rem at 88% 0%, var(--primary-soft), transparent 70%);
+  pointer-events: none;
+}
+.countdown {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.05em;
+}
+
+/* ACM 榜格 */
+.standings-cell {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.standings-cell .try {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-3);
+}
+.standings-cell.solved {
+  border-radius: var(--radius-sm);
+  background: var(--v-acced-glow);
+  color: var(--v-acced);
+  font-weight: 700;
+}
+.standings-cell.tried {
+  border-radius: var(--radius-sm);
+  background: var(--v-wrong-glow);
+  color: var(--v-wrong);
+}
+.medal-1 { color: hsl(42 95% 50%); font-weight: 800; }
+.medal-2 { color: hsl(220 6% 68%); font-weight: 800; }
+.medal-3 { color: hsl(24 80% 58%); font-weight: 800; }
+
+/* ---------------- 排行榜 ---------------- */
+.rating-delta.up { color: var(--v-acced); font-weight: 700; }
+.rating-delta.down { color: var(--v-wrong); font-weight: 700; }
+
+/* ---------------- 讨论区 ---------------- */
+.thread-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.1rem;
+}
+.thread-item h3 {
+  font-size: 0.96rem;
+  font-weight: 600;
+}
+.thread-stats {
+  flex-shrink: 0;
+  display: flex;
+  gap: 1.1rem;
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+.thread-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+}
+.thread-stats svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.comment-item {
+  display: flex;
+  gap: 0.9rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.comment-item:last-child {
+  border-bottom: none;
+}
+.comment-item .avatar {
+  width: 2.3rem;
+  height: 2.3rem;
+  font-size: 0.85rem;
+}
+.comment-actions {
+  display: flex;
+  gap: 0.9rem;
+  font-size: 0.78rem;
+  color: var(--text-3);
+  margin-top: 0.25rem;
+}
+.comment-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--text-3);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: color var(--dur-fast);
+}
+.comment-actions button:hover,
+.comment-actions button.liked {
+  color: var(--v-wrong);
+}
+
+/* ---------------- 个人主页 ---------------- */
+.user-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 1.6rem;
+  margin-bottom: 1.25rem;
+}
+.user-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(22rem 12rem at 90% -10%, var(--primary-soft), transparent 70%),
+    radial-gradient(18rem 10rem at 8% 110%, var(--primary-soft), transparent 70%);
+  pointer-events: none;
+}
+.user-hero .avatar {
+  width: 4.6rem;
+  height: 4.6rem;
+  font-size: 1.7rem;
+  border: 3px solid var(--border-strong);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.user-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+}
+@media (max-width: 34rem) {
+  .user-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---------------- 登录 / 注册 ---------------- */
+.auth-wrap {
+  min-height: calc(100dvh - 18rem);
+  display: grid;
+  place-items: center;
+  padding-block: 2rem;
+}
+.auth-card {
+  width: min(24rem, 100%);
+  padding: 2.2rem 2.2rem 1.8rem;
+}
+.auth-card .logo-mark {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  margin-inline: auto;
+  background: linear-gradient(135deg, var(--primary), hsl(calc(var(--hue) + 70) 80% 58%));
+  box-shadow: 0 8px 28px var(--primary-glow);
+}
+.auth-card form {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.6rem;
+}
+
+/* ---------------- 404 ---------------- */
+.nf-code {
+  font-family: var(--font-mono);
+  font-size: 4.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), hsl(calc(var(--hue) + 70) 80% 60%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: float-slow 3s ease-in-out infinite;
+}
+
+/* ---------------- 页脚 ---------------- */
+.footer {
+  margin-top: auto;
+  padding: 1.6rem 0 2rem;
+  color: var(--text-3);
+  font-size: 0.82rem;
+}
+.footer .container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.8rem 2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+}
+.footer a {
+  color: var(--text-2);
+}
+.footer a:hover {
+  color: var(--primary);
+}
+.footer-links {
+  display: flex;
+  gap: 1.2rem;
+}
+
+/* ---------------- 移动端导航下拉 ---------------- */
+.nav-mobile {
+  position: fixed;
+  top: calc(0.9rem + var(--nav-h) + 0.5rem);
+  left: 1rem;
+  right: 1rem;
+  z-index: 89;
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.5rem;
+}
+@media (min-width: 56.01rem) {
+  .nav-mobile {
+    display: none;
+  }
+}
