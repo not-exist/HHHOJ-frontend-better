@@ -235,12 +235,9 @@
     "searchPlaceholder": "Search threads…",
     "colReplies": "Replies",
     "colViews": "Views",
-    "colLikes": "Likes",
     "pinned": "Pinned",
     "author": "Author",
     "published": "Posted {{time}}",
-    "like": "Like",
-    "liked": "Liked",
     "comments": "comments",
     "writeReply": "Write a reply…",
     "send": "Send",
@@ -249,6 +246,12 @@
     "noThreads": "No threads in this node yet",
     "backToDiscuss": "Back to discussion",
     "threadNotFound": "Thread not found"
+  },
+  "zan": {
+    "up": "Like",
+    "down": "Dislike",
+    "multiHint": "Click again to add a vote; up to 20 for regular users",
+    "limit": "At most 20 votes per item"
   },
   "user": {
     "profile": "Profile",

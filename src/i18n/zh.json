@@ -235,12 +235,9 @@
     "searchPlaceholder": "搜索讨论…",
     "colReplies": "回复",
     "colViews": "浏览",
-    "colLikes": "点赞",
     "pinned": "置顶",
     "author": "作者",
     "published": "发布于 {{time}}",
-    "like": "点赞",
-    "liked": "已赞",
     "comments": "条评论",
     "writeReply": "写下你的回复…",
     "send": "发送",
@@ -249,6 +246,12 @@
     "noThreads": "该节点暂无讨论",
     "backToDiscuss": "返回讨论区",
     "threadNotFound": "讨论不存在"
+  },
+  "zan": {
+    "up": "赞",
+    "down": "踩",
+    "multiHint": "可重复点击，普通用户最多 20 次",
+    "limit": "每个对象最多点 20 次"
   },
   "user": {
     "profile": "个人主页",
