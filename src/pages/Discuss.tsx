@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { MessagesSquare, Search, Pin, Eye, ThumbsUp, MessageCircle, PenLine, ExternalLink } from 'lucide-react'
+import { MessagesSquare, Search, Pin, Eye, MessageCircle, PenLine, ExternalLink } from 'lucide-react'
 import UserLink from '@/components/UserLink'
+import Zan from '@/components/Zan'
 import { ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
 import { useAuth } from '@/context/AuthContext'
 import { api, isMock } from '@/services/api'
@@ -91,7 +92,7 @@ export default function Discuss() {
               </div>
               <div className="thread-stats">
                 {th.views > 0 && <span><Eye /> {th.views}</span>}
-                <span><ThumbsUp /> {th.likes}</span>
+                <Zan type="B" id={th.id} val={th.myZan ?? 0} cnt={th.likes} size={12} />
                 {replyCount > 0 && <span><MessageCircle /> {replyCount}</span>}
               </div>
             </div>
