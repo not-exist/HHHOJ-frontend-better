@@ -249,7 +249,7 @@ POST /api/zan?contest_id=<contestId>       （题目位于比赛上下文时）
 | `BC` | 博客评论（仅顶层评论展示按钮） |
 
 - 返回 `{ zan, my_zan }`：目标总票数与我的净票。
-- 同侧再点不变，对侧归零。
+- 非 `zan_multi` 目标：同侧再点不变，对侧归零。
 - `zan_multi` 为 true 的目标按次累加；普通用户净票上限 ±20，达到上限后同向点击报错（前端 toast“每个对象最多点 20 次”），管理员不限。
 - `contest_id` 只在比赛上下文传递：从 `?contest_id=` 打开题目时，`/api/problems/:id` 与投票请求都带该参数。
 
