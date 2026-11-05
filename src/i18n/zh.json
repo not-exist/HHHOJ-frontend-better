@@ -88,6 +88,7 @@
     "colTitle": "题目名称",
     "colTags": "标签",
     "colAcceptance": "通过率",
+    "colZan": "赞/踩",
     "colState": "状态",
     "stateSolved": "已通过",
     "stateTried": "尝试过",

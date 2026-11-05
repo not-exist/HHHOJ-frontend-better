@@ -6,6 +6,7 @@ import {
   Copy, FileCode2, Send, RotateCcw, Inbox, ExternalLink,
 } from 'lucide-react'
 import CodeEditor from '@/components/CodeEditor'
+import Zan from '@/components/Zan'
 import VerdictBadge from '@/components/VerdictBadge'
 import SafeHtml from '@/components/SafeHtml'
 import { ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
@@ -140,6 +141,15 @@ export default function ProblemDetail() {
           <h1 style={{ fontSize: '1.45rem' }}>
             <span className="mono faint">#{problem.id}</span> {pick(problem.title, problem.titleEn)}
           </h1>
+          <Zan
+            type="P"
+            id={problem.id}
+            val={problem.myZan ?? 0}
+            cnt={problem.zan ?? 0}
+            multi={problem.zanMulti ?? false}
+            contestId={problem.contestId ?? undefined}
+            size={14}
+          />
           {problem.contestId != null && (
             <Link to={`/contest/${problem.contestId}`} className="badge" style={{ color: 'var(--primary)', background: 'var(--primary-soft)' }}>
               {problem.contestTitle || `contest #${problem.contestId}`}

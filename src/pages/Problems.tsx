@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Search, RotateCcw, Inbox } from 'lucide-react'
+import Zan from '@/components/Zan'
 import Pagination from '@/components/Pagination'
 import { ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
 import { useAuth } from '@/context/AuthContext'
@@ -118,6 +119,7 @@ export default function Problems() {
                 <th>{t('problems.colTitle')}</th>
                 <th style={{ width: '16rem' }}>{t('problems.colTags')}</th>
                 <th style={{ width: '6.5rem' }}>{t('problems.colAcceptance')}</th>
+                <th style={{ width: '8rem' }}>{t('problems.colZan')}</th>
                 <th style={{ width: '4.5rem', textAlign: 'center' }}>{t('problems.colState')}</th>
               </tr>
             </thead>
@@ -134,6 +136,9 @@ export default function Problems() {
                       </span>
                     </td>
                     <td className="mono">{rate == null ? '—' : `${rate}%`}</td>
+                    <td>
+                      <Zan type="P" id={p.id} val={p.myZan ?? 0} cnt={p.zan ?? 0} multi={p.zanMulti ?? false} />
+                    </td>
                     <td style={{ textAlign: 'center' }}>
                       {myState.solved.has(p.id) ? (
                         <span className="ac-state done" title={t('problems.stateSolved')}>✓</span>
