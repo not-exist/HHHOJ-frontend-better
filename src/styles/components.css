@@ -413,23 +413,6 @@
   box-shadow: 0 0 12px var(--vg), inset 0 0 0 1px color-mix(in srgb, var(--vc) 35%, transparent);
 }
 
-.diff-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--dc);
-}
-.diff-tag::before {
-  content: '';
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  background: var(--dc);
-  box-shadow: 0 0 8px var(--dc);
-}
-
 .tag-chip {
   display: inline-block;
   padding: 0.1rem 0.55rem;

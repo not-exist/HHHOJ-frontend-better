@@ -79,7 +79,6 @@
   "problems": {
     "title": "题库",
     "searchPlaceholder": "搜索题号或标题…",
-    "difficulty": "难度",
     "tags": "标签",
     "myStatus": "我的状态",
     "statusAll": "全部",
@@ -87,7 +86,6 @@
     "statusTried": "未通过",
     "colId": "题号",
     "colTitle": "题目名称",
-    "colDifficulty": "难度",
     "colTags": "标签",
     "colAcceptance": "通过率",
     "colState": "状态",
@@ -174,14 +172,6 @@
     "CompileErrorShort": "CE",
     "JudgingShort": "评测中",
     "PendingShort": "等待"
-  },
-  "diff": {
-    "intro": "入门",
-    "easy": "简单",
-    "medium": "中等",
-    "hard": "较难",
-    "provincial": "省选",
-    "noi": "NOI"
   },
   "contests": {
     "title": "比赛",

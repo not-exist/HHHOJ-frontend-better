@@ -2,10 +2,8 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Search, RotateCcw, Inbox } from 'lucide-react'
-import DifficultyTag from '@/components/DifficultyTag'
 import Pagination from '@/components/Pagination'
 import { ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
-import { DIFFICULTY_KEYS } from '@/types'
 import { useAuth } from '@/context/AuthContext'
 import { api, isAuthError } from '@/services/api'
 import { useApi } from '@/services/useApi'
@@ -25,7 +23,6 @@ export default function Problems() {
   )
 
   const [q, setQ] = useState('')
-  const [diff, setDiff] = useState<string>('all')
   const [tag, setTag] = useState<string | null>(null)
   const [state, setState] = useState<'all' | 'solved' | 'tried'>('all')
   const [page, setPage] = useState(1)
@@ -51,13 +48,12 @@ export default function Problems() {
         const needle = q.toLowerCase()
         if (!String(p.id).includes(needle) && !p.title.toLowerCase().includes(needle)) return false
       }
-      if (diff !== 'all' && String(p.difficulty) !== diff) return false
       if (tag && !p.tags.includes(tag)) return false
       if (state === 'solved' && !myState.solved.has(p.id)) return false
       if (state === 'tried' && !myState.tried.has(p.id)) return false
       return true
     })
-  }, [list, q, diff, tag, state, myState])
+  }, [list, q, tag, state, myState])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const curPage = Math.min(page, totalPages)
@@ -65,7 +61,6 @@ export default function Problems() {
 
   const clearAll = () => {
     setQ('')
-    setDiff('all')
     setTag(null)
     setState('all')
     setPage(1)
@@ -89,18 +84,12 @@ export default function Problems() {
             <Search size={14} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)' }} />
             <input className="input" style={{ paddingLeft: '2.2rem' }} placeholder={t('problems.searchPlaceholder')} value={q} onChange={(e) => { setQ(e.target.value); setPage(1) }} />
           </div>
-          <select className="select" value={diff} onChange={(e) => { setDiff(e.target.value); setPage(1) }}>
-            <option value="all">{t('problems.difficulty')} · {t('common.all')}</option>
-            {DIFFICULTY_KEYS.map((k, i) => (
-              <option key={k} value={i}>{t(`diff.${k}`)}</option>
-            ))}
-          </select>
           <select className="select" value={state} onChange={(e) => { setState(e.target.value as typeof state); setPage(1) }}>
             <option value="all">{t('problems.myStatus')} · {t('problems.statusAll')}</option>
             <option value="solved">{t('problems.statusSolved')}</option>
             <option value="tried">{t('problems.statusTried')}</option>
           </select>
-          {(q || diff !== 'all' || tag || state !== 'all') && (
+          {(q || tag || state !== 'all') && (
             <button className="btn btn-sm btn-ghost" onClick={clearAll}>
               <RotateCcw size={13} /> {t('problems.clearFilters')}
             </button>
@@ -127,7 +116,6 @@ export default function Problems() {
               <tr>
                 <th style={{ width: '5rem' }}>{t('problems.colId')}</th>
                 <th>{t('problems.colTitle')}</th>
-                <th style={{ width: '7rem' }}>{t('problems.colDifficulty')}</th>
                 <th style={{ width: '16rem' }}>{t('problems.colTags')}</th>
                 <th style={{ width: '6.5rem' }}>{t('problems.colAcceptance')}</th>
                 <th style={{ width: '4.5rem', textAlign: 'center' }}>{t('problems.colState')}</th>
@@ -140,7 +128,6 @@ export default function Problems() {
                   <tr key={p.id} className="clickable" onClick={() => navigate(`/problem/${p.id}`)}>
                     <td className="mono faint">#{p.id}</td>
                     <td style={{ fontWeight: 600 }}>{pick(p.title, p.titleEn)}</td>
-                    <td>{p.difficultyKnown === false ? <span className="faint">—</span> : <DifficultyTag difficulty={p.difficulty} />}</td>
                     <td>
                       <span className="row wrap" style={{ gap: '0.3rem' }}>
                         {p.tags.slice(0, 3).map((tg) => <span key={tg} className="tag-chip">{tg}</span>)}

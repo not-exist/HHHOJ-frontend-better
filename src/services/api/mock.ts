@@ -43,7 +43,6 @@ function mockProblem(p: Problem): Problem {
     ...p,
     canSubmit: true,
     countsKnown: true,
-    difficultyKnown: true,
     submissionRequirement: [{ name: 'answer', type: 'source code', file_name: 'answer.code', languages: [...LANGUAGES] }],
   }
 }

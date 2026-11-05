@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, CalendarDays, GraduationCap, Target, Send, Percent, Activity, MessageSquare, Inbox } from 'lucide-react'
-import DifficultyTag from '@/components/DifficultyTag'
 import RatingChart from '@/components/RatingChart'
 import UserLink from '@/components/UserLink'
 import { EmptyState, ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
@@ -120,7 +119,6 @@ export default function UserProfile() {
                   <tr>
                     <th style={{ width: '5rem' }}>#</th>
                     <th>{t('problems.colTitle')}</th>
-                    <th style={{ width: '7rem' }}>{t('problems.colDifficulty')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -130,7 +128,6 @@ export default function UserProfile() {
                       <td style={{ fontWeight: 600 }}>
                         <Link to={`/problem/${p.id}`}>{pick(p.title, p.titleEn)}</Link>
                       </td>
-                      <td>{p.difficultyKnown === false ? <span className="faint">—</span> : <DifficultyTag difficulty={p.difficulty} />}</td>
                     </tr>
                   ))}
                 </tbody>

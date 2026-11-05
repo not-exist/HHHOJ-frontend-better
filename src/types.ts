@@ -1,6 +1,3 @@
-/** 题目难度档位（六档，参考主流 OJ） */
-export type Difficulty = 0 | 1 | 2 | 3 | 4 | 5
-
 export type Verdict =
   | 'Accepted'
   | 'WrongAnswer'
@@ -46,7 +43,6 @@ export interface Problem {
   id: number
   title: string
   titleEn: string
-  difficulty: Difficulty
   tags: string[]
   /** 通过人数 */
   solved: number
@@ -82,7 +78,6 @@ export interface Problem {
   myBestAcSubmissionId?: number | null
   /** 真实详情接口没有通过率信息时为 false */
   countsKnown?: boolean
-  difficultyKnown?: boolean
 }
 
 export interface SubmissionRequirementItem {
@@ -232,6 +227,3 @@ export interface HomeData {
   userRanklist: RanklistRow[]
   problemRanklist: RanklistRow[]
 }
-
-export const DIFFICULTY_KEYS = ['intro', 'easy', 'medium', 'hard', 'provincial', 'noi'] as const
-export type DifficultyKey = (typeof DIFFICULTY_KEYS)[Difficulty]

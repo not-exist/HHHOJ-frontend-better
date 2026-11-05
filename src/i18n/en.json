@@ -79,7 +79,6 @@
   "problems": {
     "title": "Problem Set",
     "searchPlaceholder": "Search by ID or title…",
-    "difficulty": "Difficulty",
     "tags": "Tags",
     "myStatus": "My status",
     "statusAll": "All",
@@ -87,7 +86,6 @@
     "statusTried": "Attempted",
     "colId": "ID",
     "colTitle": "Title",
-    "colDifficulty": "Difficulty",
     "colTags": "Tags",
     "colAcceptance": "Acceptance",
     "colState": "State",
@@ -174,14 +172,6 @@
     "CompileErrorShort": "CE",
     "JudgingShort": "Judging",
     "PendingShort": "Pending"
-  },
-  "diff": {
-    "intro": "Intro",
-    "easy": "Easy",
-    "medium": "Medium",
-    "hard": "Hard",
-    "provincial": "Provincial",
-    "noi": "NOI"
   },
   "contests": {
     "title": "Contests",
