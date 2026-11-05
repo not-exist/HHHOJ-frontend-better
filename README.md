@@ -97,7 +97,7 @@ mock 模式标记存在 `sessionStorage`，进入后当前标签页内继续生�
 
 - 时间：HHHOJ 的 `YYYY-MM-DD HH:MM:SS` 按 `Asia/Shanghai` 解析。
 - 内存：HHHOJ 的 `used_memory` / 测试点 `memory` 是 KB，界面统一换算成 MB。
-- 难度：HHHOJ 没有题目难度字段，按通过率估算六档（仅用于视觉分档，文档中标注为估算）。
+- 赞/踩：统一走 `POST /api/zan`，`type` 取 `P`（题目）/ `C`（比赛）/ `B`（博客）/ `BC`（博客评论），`delta` 为 `1` 或 `-1`，返回 `{ zan, my_zan }`。同侧再点不变、对侧归零；`zan_multi` 目标可重复累加，普通用户净票最多 ±20，管理员不限；比赛内题目的请求附带 `?contest_id=`。题目与比赛的列表/详情读取 `zan`、`my_zan`、`zan_multi`。
 - 评测结果：`Waiting` → Pending，`Judging` → Judging，`Judged` + score → Accepted / WrongAnswer；`result_error` 含 `compile` → CompileError，否则 RuntimeError；提交详情优先用测试点 XML 的 `info` 精修。
 - 语言、题面 HTML、博客 HTML、评论 HTML 等逐字段对照见 [docs/api-mapping.md](docs/api-mapping.md)。
 - 题面/博客/评论 HTML 一律经 DOMPurify 消毒；`$...$` / `$$...$$` 用 KaTeX 的 **MathML** 输出，不依赖 KaTeX 字体文件。
@@ -108,6 +108,7 @@ mock 模式标记存在 `sessionStorage`，进入后当前标签页内继续生�
 - 比赛内题目详情、比赛报名、提交详情等仍走原站（表外路径）。
 - 提交记录页读取最近 100 条后在浏览器内筛选/分页；HHHOJ 的 verdict 不是服务端筛选字段。
 - 博客评论一次加载前 20 条，更多请回原站。
+- `GET /api/blogs` 列表接口不返回 `my_zan`，讨论列表中的赞/踩在首次点击前按未投票高亮；点击后以后端返回的 `{ zan, my_zan }` 为准。
 - 生产部署前需自行替换 `@match` 占位域名。
 
 ## 目录

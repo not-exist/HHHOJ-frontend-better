@@ -12,7 +12,7 @@
 | 测试点 XML `memory`（KB） | `TestcaseResult.memoryMb` | `/1024` 取整 |
 | `tot_size`（bytes） | `codeSizeKb` | `/1024`，保留 1 位小数 |
 | `ac_num` / `submit_num` | `solved` / `submissions` | 列表页通过率 = `ac_num / submit_num` |
-| 无难度字段 | `difficulty: 0..5` | 按通过率估算，见第 3 节 |
+| `zan` / `my_zan` / `zan_multi` | `zan` / `myZan` / `zanMulti` | 总票数 / 我的净票 / 是否允许多票；缺少 `my_zan` 的列表（`/api/blogs`）按未投票处理 |
 
 ## 1. 首页 `/api/home`
 
@@ -39,7 +39,7 @@
 ### 列表 `/api/problems?page=&size=&search=&tag=`
 
 ```json
-{ "items": [{ "id", "title", "ac_num", "submit_num", "zan", "tags", "my_best_ac_submission_id" }], "total" }
+{ "items": [{ "id", "title", "ac_num", "submit_num", "zan", "zan_multi", "my_zan", "tags", "my_best_ac_submission_id" }], "total" }
 ```
 
 | 原始 | 领域 |
@@ -47,7 +47,9 @@
 | `ac_num` / `submit_num` | `solved` / `submissions` |
 | `my_best_ac_submission_id != null` | 已通过，列表显示 ✓ |
 | `tags` | `tags` |
-| 通过率 | 估算 `difficulty` |
+| `zan` | `zan` |
+| `my_zan` | `myZan` |
+| `zan_multi` | `zanMulti`（可重复赞；普通用户 ±20，管理员不限） |
 
 接口要求登录。客户端分页：每页 100 条拉全量，再在浏览器内做 12 条/页的分页、搜索、标签与状态筛选。
 
@@ -55,7 +57,7 @@
 
 ```json
 {
-  "problem": { "id", "title", "zan", "my_zan", "tags" },
+  "problem": { "id", "title", "zan", "zan_multi", "my_zan", "tags" },
   "statement_html": "...",
   "statement_pdf": "",
   "limits": { "time": 1, "memory": 256 },
@@ -75,6 +77,7 @@
 | `can_submit` | `canSubmit` |
 | `prev_problem_id` / `next_problem_id` | 上一题 / 下一题 |
 | `contest` | `contestId` / `contestTitle` |
+| `problem.zan` / `problem.my_zan` / `problem.zan_multi` | `zan` / `myZan` / `zanMulti` |
 | 详情接口没有通过率 | `countsKnown = false`，侧栏显示 — |
 
 提交表单字段（对照原站 `SubmissionForm`）：
@@ -87,23 +90,7 @@ POST /api/problems/:id/submissions[?contest_id=]
 → { submission_id }
 ```
 
-## 3. 难度估算
-
-HHHOJ 的题目没有难度字段。列表页的六档难度完全由通过率推导：
-
-| 通过率 | 难度 | 文案 |
-|---|---|---|
-| ≥ 70% | 0 | 入门 |
-| 50% – 70% | 1 | 简单 |
-| 30% – 50% | 2 | 中等 |
-| 15% – 30% | 3 | 较难 |
-| 5% – 15% | 4 | 省选 |
-| < 5% | 5 | NOI |
-| 无提交 | 0 | 入门 |
-
-详情页没有 `ac_num/submit_num`，因此 `difficultyKnown = false`，不显示难度徽章。该估算只用于视觉分档，不代表官方难度。
-
-## 4. 提交记录
+## 3. 提交记录
 
 ### 列表 `/api/submissions?problem_id=&submitter=&language=&status=&page=&size=`
 
@@ -151,7 +138,7 @@ HHHOJ 的题目没有难度字段。列表页的六档难度完全由通过率�
 - 若有测试点失败，整体 verdict 采用第一个失败测试点的 verdict。
 - 轮询：`/api/submissions/status?ids=1,2,3` 每 1 秒一次，直到 `judged=true`，然后重新拉列表。
 
-## 5. 比赛
+## 4. 比赛
 
 ### 列表 `/api/contests?active_page=&finished_page=&size=`
 
@@ -173,12 +160,13 @@ HHHOJ 的题目没有难度字段。列表页的六档难度完全由通过率�
 | `player_num` | `participantCount` |
 | `has_registered` | `registered` |
 | `last_min` | `lastMin` |
+| `zan` / `my_zan` / `zan_multi` | `zan` / `myZan` / `zanMulti`（可重复赞；普通用户 ±20，管理员不限） |
 
 ### 详情 `/api/contests/:id/dashboard`
 
 | 原始 | 领域 |
 |---|---|
-| `contest`（含 `rated.enabled`、`registered`） | `Contest` |
+| `contest`（含 `rated.enabled`、`registered`、`zan`、`my_zan`、`zan_multi`） | `Contest`；赞字段映射为 `zan` / `myZan` / `zanMulti` |
 | `description_html` | `descriptionHtml` |
 | `problems[]` | `ContestDetailData.problems`（id/title/pos/my_ac_submission_id） |
 | `notices[]` | 公告 tab |
@@ -202,7 +190,7 @@ HHHOJ 的题目没有难度字段。列表页的六档难度完全由通过率�
 
 榜单接口可能因未报名 / 未公布而报错；页面显示错误信息并提供“原站榜单”链接。
 
-## 6. 博客 / 讨论区
+## 5. 博客 / 讨论区
 
 ### 列表 `/api/blogs?page=&size=`
 
@@ -217,6 +205,8 @@ HHHOJ 的题目没有难度字段。列表页的六档难度完全由通过率�
 | `post_time` | `createdAt` |
 | `zan` | `likes` |
 | 无标签 | `node='share'`，前端隐藏节点筛选 |
+
+该列表不返回 `my_zan`，列表项的 `myZan` 按 0 处理（首次点击前不高亮，见“已知限制”）。
 
 ### 详情 `/api/blogs/:id?with_comments=1&comment_page=1&comment_size=20`
 
@@ -233,7 +223,7 @@ HHHOJ 的题目没有难度字段。列表页的六档难度完全由通过率�
 | `content_html` | `contentHtml`（DOMPurify + MathML） |
 | `tags` | `tags` |
 | `poster.username` | 评论作者 |
-| `zan` / `my_zan` | 点赞数 / 我的点赞态 |
+| `zan` / `my_zan` | 帖子与顶层评论的 `likes` / `myZan`；回复只有 `likes`，不显示赞/踩按钮 |
 | `comments.total` | `commentCount` |
 
 评论写入：
@@ -241,10 +231,29 @@ HHHOJ 的题目没有难度字段。列表页的六档难度完全由通过率�
 ```text
 POST /api/blogs/:id/comments                     { content }
 POST /api/blogs/:id/comments/:commentId/replies  { content }
-POST /api/zan                                    { type: "B"|"BC", id, delta: 1|-1 }
 ```
 
-## 7. 用户资料 `/api/users/:username`
+### 赞 / 踩 `POST /api/zan`
+
+```text
+POST /api/zan                              { type: "P"|"C"|"B"|"BC", id, delta: 1|-1 }
+POST /api/zan?contest_id=<contestId>       （题目位于比赛上下文时）
+→ { zan, my_zan }
+```
+
+| type | 目标 |
+|---|---|
+| `P` | 题目 |
+| `C` | 比赛 |
+| `B` | 博客帖子 |
+| `BC` | 博客评论（仅顶层评论展示按钮） |
+
+- 返回 `{ zan, my_zan }`：目标总票数与我的净票。
+- 同侧再点不变，对侧归零。
+- `zan_multi` 为 true 的目标按次累加；普通用户净票上限 ±20，达到上限后同向点击报错（前端 toast“每个对象最多点 20 次”），管理员不限。
+- `contest_id` 只在比赛上下文传递：从 `?contest_id=` 打开题目时，`/api/problems/:id` 与投票请求都带该参数。
+
+## 6. 用户资料 `/api/users/:username`
 
 ```json
 {
@@ -287,7 +296,7 @@ POST /api/zan                                    { type: "B"|"BC", id, delta: 1|
 - `/api/users/<name>/blogs?page=1&size=100` → 讨论帖子 tab
 - `/api/problems/batch?ids=...` → 已解决题目标题（接口要求登录）
 
-## 8. 认证
+## 7. 认证
 
 | 操作 | 端点 | 说明 |
 |---|---|---|
@@ -300,7 +309,7 @@ POST /api/zan                                    { type: "B"|"BC", id, delta: 1|
 
 注册后的真实行为：第一个用户成为管理员，其余用户进入 `pending`，需管理员审核后才能登录。前端在注册成功后跳转登录页并提示等待审核；不会伪造会话。
 
-## 9. 回退路径
+## 8. 回退路径
 
 以下原站能力不接管，导航到这些路径时脚本在路由门退出，由 HHHOJ 原站完整提供：
 
