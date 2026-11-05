@@ -73,6 +73,21 @@ http://127.0.0.1:18080/?__mock=0    # 关闭 mock
 
 mock 模式标记存在 `sessionStorage`，进入后当前标签页内继续生效。`src/main.tsx` 保留独立挂载入口，供不经过接管层的预览使用；`pnpm dev` 的根页面则是 vite-plugin-monkey 的脚本安装页，不是应用页面。
 
+## 测试
+
+```bash
+pnpm test          # Vitest 单测（jsdom）
+pnpm test:e2e      # Playwright E2E（先构建 dist 产物）
+E2E_PORT=18081 pnpm test:e2e   # 本机 18080 被真实 HHHOJ 占用时换端口
+```
+
+- **单测**覆盖纯逻辑：`src/utils/*`、`src/services/md5.ts`、`src/services/api/http.ts`、`src/services/api/real.ts` 的字段映射，以及 `src/takeover.ts` 的路由门。
+- **E2E** 由 `e2e/server.mjs` 在 `127.0.0.1:18080` 提供最小原站壳，`e2e/helpers.ts` 用 `addInitScript` 注入构建产物并 stub GM API：
+  - `?__mock=1` 驱动内置 mock 数据，覆盖接管 UI；
+  - `page.route('**/api/**')` 返回 fixture，覆盖真实 API 映射链路；
+  - 另有表外路径回退（`/faq`）与逃生舱（`?native=1` / `?takeover=1`）用例。
+- CI 的 `unit` 与 `e2e` job 分别运行上述命令，E2E 失败时上传 Playwright 报告。
+
 ## 接管范围
 
 | 原站路径 | TwilightOJ 页面 | 数据源 |

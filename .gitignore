@@ -3,3 +3,6 @@ node_modules/
 *.log
 *.tsbuildinfo
 .zcode/
+coverage/
+playwright-report/
+test-results/

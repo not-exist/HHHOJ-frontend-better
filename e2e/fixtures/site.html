@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HHHOJ - HHH Online Judge</title>
+  </head>
+  <body role="document">
+    <!-- Mimics HHHOJ's original shell: the SPA mounts into #root. -->
+    <div id="root"></div>
+    <script>
+      // Mimics HHHOJ's inline bootstrap. On takeover routes the userscript makes
+      // document.getElementById('root') return null and removes #root, so this
+      // marker must never become visible; on fallback routes it is.
+      var root = document.getElementById('root')
+      if (root) {
+        root.textContent = 'NATIVE SITE'
+      } else {
+        console.warn('[e2e fixture] #root unavailable (takeover guard active)')
+      }
+    </script>
+  </body>
+</html>

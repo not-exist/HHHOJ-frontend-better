@@ -27,7 +27,7 @@ let mounted = false
 let styleObserver: MutationObserver | null = null
 let originalGetElementById: typeof Document.prototype.getElementById | null = null
 
-function isTakeoverPath(pathname: string): boolean {
+export function isTakeoverPath(pathname: string): boolean {
   return TAKEOVER_ROUTES.some((re) => re.test(pathname))
 }
 
