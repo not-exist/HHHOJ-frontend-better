@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { MAX_ZAN_VOTES, nextZan } from '../src/utils/zan.ts'
+import { MAX_ZAN_VOTES, nextZan } from '../node_modules/.cache/zan-test/zan.js'
 
 test('one-vote target: first vote starts the side', () => {
   assert.equal(nextZan(0, 1, false), 1)

@@ -14,7 +14,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/zan.test.ts"
+    "test": "tsc src/utils/zan.ts --target ES2020 --module ESNext --moduleResolution bundler --outDir node_modules/.cache/zan-test --noEmit false --skipLibCheck && node --test tests/zan.test.mjs"
   },
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.0",
