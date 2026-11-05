@@ -41,6 +41,8 @@ interface RawProblemListItem {
   ac_num: number
   submit_num: number
   zan: number
+  zan_multi: boolean
+  my_zan: number
   tags: string[]
   my_best_ac_submission_id: number | null
 }
@@ -60,7 +62,7 @@ interface RawRequirement {
 }
 
 interface RawProblemDetail {
-  problem: { id: number; title: string; zan: number; my_zan: number; tags: string[] }
+  problem: { id: number; title: string; zan: number; zan_multi: boolean; my_zan: number; tags: string[] }
   statement_html: string
   statement_pdf: string
   limits: { time: number | null; memory: number | null }
@@ -128,6 +130,7 @@ interface RawContestItem {
   player_num: number
   contest_type: string
   zan: number
+  zan_multi: boolean
   my_zan: number
   has_registered: boolean
 }
@@ -148,6 +151,7 @@ interface RawContestObject {
   contest_type: string
   rated: { enabled: boolean; forced: boolean }
   zan: number
+  zan_multi: boolean
   my_zan: number
   registered: boolean
   viewer: { regular_manage: boolean; admin: boolean }
@@ -337,6 +341,9 @@ function mapProblemListItem(p: RawProblemListItem): Problem {
     source: '',
     myBestAcSubmissionId: p.my_best_ac_submission_id,
     countsKnown: true,
+    zan: p.zan,
+    myZan: p.my_zan,
+    zanMulti: p.zan_multi,
   }
 }
 
@@ -374,6 +381,9 @@ function mapProblemDetail(d: RawProblemDetail): Problem {
     contestId: d.contest?.id ?? null,
     contestTitle,
     countsKnown: false,
+    zan: d.problem.zan,
+    myZan: d.problem.my_zan,
+    zanMulti: d.problem.zan_multi,
   }
 }
 
@@ -503,6 +513,7 @@ function mapContestItem(c: RawContestItem): Contest {
     registered: c.has_registered,
     zan: c.zan,
     myZan: c.my_zan,
+    zanMulti: c.zan_multi,
   }
 }
 
@@ -525,6 +536,7 @@ function mapContestObject(c: RawContestObject): Contest {
     registered: c.registered,
     zan: c.zan,
     myZan: c.my_zan,
+    zanMulti: c.zan_multi,
   }
 }
 
@@ -781,6 +793,8 @@ export const realApi: ApiClient = {
             ac_num: 0,
             submit_num: 0,
             zan: 0,
+            zan_multi: false,
+            my_zan: 0,
             tags: [],
             my_best_ac_submission_id: null,
           }),
@@ -879,8 +893,9 @@ export const realApi: ApiClient = {
     await post(path, { content })
   },
 
-  async vote(type, id, delta): Promise<ZanResult> {
-    return post<ZanResult>('/api/zan', { type, id, delta })
+  async vote(type, id, delta, contestId): Promise<ZanResult> {
+    const path = contestId == null ? '/api/zan' : `/api/zan?contest_id=${encodeURIComponent(String(contestId))}`
+    return post<ZanResult>(path, { type, id, delta })
   },
 
   auth: {

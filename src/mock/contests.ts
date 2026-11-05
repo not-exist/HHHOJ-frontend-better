@@ -21,6 +21,7 @@ export const CONTESTS: Contest[] = [
       { time: '00:05', text: '评测机已就位，祝大家 RP++。' },
       { time: '00:42', text: 'D 题时间限制已放宽至 2s。' },
     ],
+    zan: 42, myZan: 0, zanMulti: true,
   },
   {
     id: 102,

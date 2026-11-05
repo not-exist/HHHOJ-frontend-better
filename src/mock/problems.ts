@@ -20,6 +20,7 @@ export const PROBLEMS: Problem[] = [
     samples: [{ input: '1 2', output: '3' }, { input: '114514 1919810', output: '2034324' }],
     hint: '注意使用 64 位整数。', hintEn: 'Use 64-bit integers.',
     source: 'Classic',
+    zan: 128, myZan: 0, zanMulti: true,
   },
   {
     id: 1001,

@@ -10,6 +10,7 @@ import type {
   Submission,
   Thread,
 } from '@/types'
+import { nextZan } from '@/utils/zan'
 import { PROBLEMS } from '@/mock/problems'
 import { CONTESTS, standingsFor } from '@/mock/contests'
 import { THREADS } from '@/mock/discuss'
@@ -36,6 +37,9 @@ const DELAY = 180
 const DEMO_USER_KEY = 'toj.demo-user'
 const DEMO_ROLE = 'user' as const
 
+/** 演示模式的赞数状态：key 为 `${type}:${id}`，val 为我的净赞，cnt 为总赞数 */
+const zanVotes = new Map<string, { val: number; cnt: number }>()
+
 const delay = (ms = DELAY) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 
 function mockProblem(p: Problem): Problem {
@@ -43,6 +47,9 @@ function mockProblem(p: Problem): Problem {
     ...p,
     canSubmit: true,
     countsKnown: true,
+    zan: p.zan ?? 0,
+    myZan: p.myZan ?? 0,
+    zanMulti: p.zanMulti ?? false,
     submissionRequirement: [{ name: 'answer', type: 'source code', file_name: 'answer.code', languages: [...LANGUAGES] }],
   }
 }
@@ -51,10 +58,29 @@ function mockContest(c: Contest): Contest {
   return {
     ...c,
     descriptionHtml: '',
+    zan: c.zan ?? 0,
+    myZan: c.myZan ?? 0,
+    zanMulti: c.zanMulti ?? false,
     problemTitles: Object.fromEntries(
       c.problems.map((id) => [id, PROBLEMS.find((p) => p.id === id)?.title ?? `#${id}`]),
     ),
     problemCount: c.problems.length,
+  }
+}
+
+function mockComment(c: Comment): Comment {
+  return {
+    ...c,
+    myZan: c.myZan ?? 0,
+    replies: c.replies.map(mockComment),
+  }
+}
+
+function mockThread(t: Thread): Thread {
+  return {
+    ...t,
+    myZan: t.myZan ?? 0,
+    comments: t.comments.map(mockComment),
   }
 }
 
@@ -146,12 +172,13 @@ export const mockApi: ApiClient = {
 
   async threads(): Promise<Thread[]> {
     await delay()
-    return THREADS
+    return THREADS.map(mockThread)
   },
 
   async thread(id: number): Promise<Thread | undefined> {
     await delay()
-    return THREADS.find((t) => t.id === id)
+    const thread = THREADS.find((t) => t.id === id)
+    return thread ? mockThread(thread) : undefined
   },
 
   async user(name: string): Promise<UserProfileData | undefined> {
@@ -250,9 +277,14 @@ export const mockApi: ApiClient = {
     await delay(120)
   },
 
-  async vote(_type, _id, delta): Promise<ZanResult> {
+  async vote(type, id, delta, _contestId?): Promise<ZanResult> {
     await delay(80)
-    return { my_zan: delta, zan: delta > 0 ? 1 : 0 }
+    const key = `${type}:${id}`
+    const current = zanVotes.get(key) ?? { val: 0, cnt: 0 }
+    const next = nextZan(current.val, delta, false) ?? current.val
+    const state = { val: next, cnt: current.cnt + (next - current.val) }
+    zanVotes.set(key, state)
+    return { my_zan: state.val, zan: state.cnt }
   },
 
   auth: {

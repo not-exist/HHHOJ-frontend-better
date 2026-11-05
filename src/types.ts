@@ -78,6 +78,12 @@ export interface Problem {
   myBestAcSubmissionId?: number | null
   /** 真实详情接口没有通过率信息时为 false */
   countsKnown?: boolean
+  /** 赞数 */
+  zan?: number
+  /** 我的赞（-1/0/1，或多票时的累计值） */
+  myZan?: number
+  /** 该题是否允许多次赞 */
+  zanMulti?: boolean
 }
 
 export interface SubmissionRequirementItem {
@@ -146,6 +152,8 @@ export interface Contest {
   lastMin?: number
   zan?: number
   myZan?: number
+  /** 该比赛是否允许多次赞 */
+  zanMulti?: boolean
 }
 
 export interface StandingsCell {
@@ -227,3 +235,5 @@ export interface HomeData {
   userRanklist: RanklistRow[]
   problemRanklist: RanklistRow[]
 }
+
+export type { ZanDelta, ZanTargetType } from '@/utils/zan'
