@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CalendarDays, Users, Clock3, ChevronRight } from 'lucide-react'
 import Countdown from '@/components/Countdown'
+import Zan from '@/components/Zan'
 import { ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/services/api'
@@ -77,6 +78,9 @@ export default function Contests() {
                   <span><Clock3 /> {fmtDuration(c.endAt - c.startAt)}</span>
                   <span><Users /> {t('home.participants', { n: c.participantCount })}</span>
                   {count > 0 && <span>{t('contests.problemsCount', { n: count })}</span>}
+                </div>
+                <div className="row" style={{ marginTop: '0.35rem' }}>
+                  <Zan type="C" id={c.id} val={c.myZan ?? 0} cnt={c.zan ?? 0} multi={c.zanMulti ?? false} />
                 </div>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>

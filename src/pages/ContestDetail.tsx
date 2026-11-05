@@ -6,6 +6,7 @@ import {
   CheckCircle2, MinusCircle, ExternalLink,
 } from 'lucide-react'
 import Countdown from '@/components/Countdown'
+import Zan from '@/components/Zan'
 import UserLink from '@/components/UserLink'
 import SafeHtml from '@/components/SafeHtml'
 import { ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
@@ -65,6 +66,9 @@ export default function ContestDetail({ initialTab = 'announcements' }: { initia
               <span><Clock3 /> {fmtDuration(contest.endAt - contest.startAt)}</span>
               {contest.participantCount > 0 && <span><Users /> {t('home.participants', { n: contest.participantCount })}</span>}
               {problems.length > 0 && <span>{t('contests.problemsCount', { n: problems.length })}</span>}
+            </div>
+            <div className="row" style={{ marginTop: '0.35rem' }}>
+              <Zan type="C" id={contest.id} val={contest.myZan ?? 0} cnt={contest.zan ?? 0} multi={contest.zanMulti ?? false} />
             </div>
             {contest.descriptionHtml ? (
               <SafeHtml html={contest.descriptionHtml} className="statement statement-html" />
