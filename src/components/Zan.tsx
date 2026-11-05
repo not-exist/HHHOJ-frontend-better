@@ -65,7 +65,7 @@ export default function Zan({ type, id, val, cnt, multi = false, contestId, size
     shown.cnt > 0 ? 'zan-count positive' : shown.cnt < 0 ? 'zan-count negative' : 'zan-count neutral'
 
   return (
-    <span className="zan" title={multi ? t('zan.multiHint') : undefined}>
+    <span className="zan" title={multi ? t('zan.multiHint') : undefined} onClick={(e) => e.stopPropagation()}>
       <button
         type="button"
         className={`zan-btn up${shown.val > 0 ? ' on' : ''}`}

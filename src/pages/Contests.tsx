@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CalendarDays, Users, Clock3, ChevronRight } from 'lucide-react'
 import Countdown from '@/components/Countdown'
@@ -16,6 +16,7 @@ type TabKey = ContestPhase | 'all'
 export default function Contests() {
   const { t } = useTranslation()
   const { user, loading: authLoading } = useAuth()
+  const navigate = useNavigate()
   const [tab, setTab] = useState<TabKey>('all')
 
   const contests = useApi(
@@ -60,7 +61,22 @@ export default function Contests() {
         {visible.map((c, i) => {
           const count = c.problemCount ?? c.problems.length
           return (
-            <Link to={`/contest/${c.id}`} key={c.id} className="glass hoverable contest-card rise" style={{ animationDelay: `${i * 0.04}s` }}>
+            <div
+              key={c.id}
+              className="glass hoverable contest-card rise"
+              style={{ animationDelay: `${i * 0.04}s` }}
+              role="link"
+              tabIndex={0}
+              aria-label={pick(c.title, c.titleEn)}
+              onClick={() => navigate(`/contest/${c.id}`)}
+              onKeyDown={(e) => {
+                if (e.target !== e.currentTarget) return
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  navigate(`/contest/${c.id}`)
+                }
+              }}
+            >
               <span className="contest-rule-badge">{c.rule}</span>
               <div className="grow">
                 <div className="row wrap" style={{ gap: '0.5rem' }}>
@@ -104,7 +120,7 @@ export default function Contests() {
                 )}
               </div>
               <ChevronRight size={16} className="faint" />
-            </Link>
+            </div>
           )
         })}
       </div>
