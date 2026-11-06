@@ -4,7 +4,6 @@ import type {
   Contest,
   ContestPhase,
   ContestRule,
-  Difficulty,
   HomeData,
   OJUser,
   Problem,
@@ -42,6 +41,8 @@ interface RawProblemListItem {
   ac_num: number
   submit_num: number
   zan: number
+  zan_multi: boolean
+  my_zan: number
   tags: string[]
   my_best_ac_submission_id: number | null
 }
@@ -61,7 +62,7 @@ interface RawRequirement {
 }
 
 interface RawProblemDetail {
-  problem: { id: number; title: string; zan: number; my_zan: number; tags: string[] }
+  problem: { id: number; title: string; zan: number; zan_multi: boolean; my_zan: number; tags: string[] }
   statement_html: string
   statement_pdf: string
   limits: { time: number | null; memory: number | null }
@@ -129,6 +130,7 @@ interface RawContestItem {
   player_num: number
   contest_type: string
   zan: number
+  zan_multi: boolean
   my_zan: number
   has_registered: boolean
 }
@@ -149,6 +151,7 @@ interface RawContestObject {
   contest_type: string
   rated: { enabled: boolean; forced: boolean }
   zan: number
+  zan_multi: boolean
   my_zan: number
   registered: boolean
   viewer: { regular_manage: boolean; admin: boolean }
@@ -314,24 +317,11 @@ function mapRole(level: number): UserRole {
   return ROLE_BY_LEVEL[level] ?? 'user'
 }
 
-/** HHHOJ 没有题目难度字段：用通过率估算，仅用于视觉分档 */
-function estimateDifficulty(ac: number, submit: number): Difficulty {
-  if (submit <= 0) return 0
-  const rate = ac / submit
-  if (rate >= 0.7) return 0
-  if (rate >= 0.5) return 1
-  if (rate >= 0.3) return 2
-  if (rate >= 0.15) return 3
-  if (rate >= 0.05) return 4
-  return 5
-}
-
 function mapProblemListItem(p: RawProblemListItem): Problem {
   return {
     id: p.id,
     title: p.title,
     titleEn: p.title,
-    difficulty: estimateDifficulty(p.ac_num, p.submit_num),
     tags: p.tags ?? [],
     solved: p.ac_num,
     submissions: p.submit_num,
@@ -351,7 +341,9 @@ function mapProblemListItem(p: RawProblemListItem): Problem {
     source: '',
     myBestAcSubmissionId: p.my_best_ac_submission_id,
     countsKnown: true,
-    difficultyKnown: true,
+    zan: p.zan,
+    myZan: p.my_zan,
+    zanMulti: p.zan_multi,
   }
 }
 
@@ -363,7 +355,6 @@ function mapProblemDetail(d: RawProblemDetail): Problem {
     id: d.problem.id,
     title: d.problem.title,
     titleEn: d.problem.title,
-    difficulty: 0,
     tags: d.problem.tags ?? [],
     solved: 0,
     submissions: 0,
@@ -390,7 +381,9 @@ function mapProblemDetail(d: RawProblemDetail): Problem {
     contestId: d.contest?.id ?? null,
     contestTitle,
     countsKnown: false,
-    difficultyKnown: false,
+    zan: d.problem.zan,
+    myZan: d.problem.my_zan,
+    zanMulti: d.problem.zan_multi,
   }
 }
 
@@ -520,6 +513,7 @@ function mapContestItem(c: RawContestItem): Contest {
     registered: c.has_registered,
     zan: c.zan,
     myZan: c.my_zan,
+    zanMulti: c.zan_multi,
   }
 }
 
@@ -542,6 +536,7 @@ function mapContestObject(c: RawContestObject): Contest {
     registered: c.registered,
     zan: c.zan,
     myZan: c.my_zan,
+    zanMulti: c.zan_multi,
   }
 }
 
@@ -798,10 +793,11 @@ export const realApi: ApiClient = {
             ac_num: 0,
             submit_num: 0,
             zan: 0,
+            zan_multi: false,
+            my_zan: 0,
             tags: [],
             my_best_ac_submission_id: null,
           }),
-          difficultyKnown: false,
           countsKnown: false,
         }))
       } catch {
@@ -897,8 +893,9 @@ export const realApi: ApiClient = {
     await post(path, { content })
   },
 
-  async vote(type, id, delta): Promise<ZanResult> {
-    return post<ZanResult>('/api/zan', { type, id, delta })
+  async vote(type, id, delta, contestId): Promise<ZanResult> {
+    const path = contestId == null ? '/api/zan' : `/api/zan?contest_id=${encodeURIComponent(String(contestId))}`
+    return post<ZanResult>(path, { type, id, delta })
   },
 
   auth: {

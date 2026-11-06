@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ThumbsUp, MessageCircle, Send, Pin } from 'lucide-react'
+import { ChevronLeft, MessageCircle, Send, Pin } from 'lucide-react'
 import UserLink from '@/components/UserLink'
 import SafeHtml from '@/components/SafeHtml'
+import Zan from '@/components/Zan'
 import { EmptyState, ErrorState, Loading, LoginRequired } from '@/components/AsyncState'
 import { useAuth } from '@/context/AuthContext'
 import { api, isMock } from '@/services/api'
@@ -30,13 +31,9 @@ export default function DiscussThread() {
   const [replyTo, setReplyTo] = useState<number | null>(null)
   const [replyAuthor, setReplyAuthor] = useState('')
   const [sending, setSending] = useState(false)
-  const [likeState, setLikeState] = useState<{ val: number; cnt: number } | null>(null)
-  const [commentLikes, setCommentLikes] = useState<Record<number, { val: number; cnt: number }>>({})
 
   const comments = useMemo(() => [...(thread?.comments ?? []), ...extraComments], [thread, extraComments])
   const replyCount = comments.reduce((s, c) => s + 1 + c.replies.length, 0)
-  const liked = (likeState?.val ?? thread?.myZan ?? 0) > 0
-  const likeCount = likeState?.cnt ?? thread?.likes ?? 0
 
   const send = async () => {
     if (!user) {
@@ -70,44 +67,6 @@ export default function DiscussThread() {
       showToast(error instanceof Error ? error.message : String(error))
     } finally {
       setSending(false)
-    }
-  }
-
-  const toggleLike = async () => {
-    if (!user) {
-      showToast(t('common.pleaseLogin'))
-      return
-    }
-    if (!thread) return
-    const delta: 1 | -1 = liked ? -1 : 1
-    if (isMock) {
-      setLikeState({ val: delta, cnt: likeCount + delta })
-      return
-    }
-    try {
-      const result = await api.vote('B', thread.id, delta)
-      setLikeState({ val: result.my_zan, cnt: result.zan })
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : String(error))
-    }
-  }
-
-  const toggleCommentLike = async (c: Comment) => {
-    if (!user) {
-      showToast(t('common.pleaseLogin'))
-      return
-    }
-    const current = commentLikes[c.id]?.val ?? c.myZan ?? 0
-    if (isMock) {
-      const base = commentLikes[c.id]?.cnt ?? c.likes
-      setCommentLikes((prev) => ({ ...prev, [c.id]: { val: current > 0 ? 0 : 1, cnt: base + (current > 0 ? -1 : 1) } }))
-      return
-    }
-    try {
-      const result = await api.vote('BC', c.id, current > 0 ? -1 : 1)
-      setCommentLikes((prev) => ({ ...prev, [c.id]: { val: result.my_zan, cnt: result.zan } }))
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : String(error))
     }
   }
 
@@ -157,9 +116,7 @@ export default function DiscussThread() {
         )}
 
         <div className="row" style={{ marginTop: '1.2rem' }}>
-          <button className={`btn btn-sm ${liked ? 'btn-primary' : 'btn-ghost'}`} onClick={() => void toggleLike()}>
-            <ThumbsUp size={13} /> {likeCount}
-          </button>
+          <Zan type="B" id={thread.id} val={thread.myZan ?? 0} cnt={thread.likes} />
         </div>
       </section>
 
@@ -168,19 +125,13 @@ export default function DiscussThread() {
         <h2 className="card-title"><MessageCircle size={16} /> {replyCount} {t('discuss.comments')}</h2>
 
         <div className="stack" style={{ gap: 0 }}>
-          {comments.map((c) => {
-            const state = commentLikes[c.id]
-            return (
-              <CommentItem
-                key={c.id}
-                c={c}
-                myZan={state?.val ?? c.myZan ?? 0}
-                likeCount={state?.cnt ?? c.likes}
-                onLike={() => void toggleCommentLike(c)}
-                onReply={() => { setReplyTo(c.id); setReplyAuthor(c.author) }}
-              />
-            )
-          })}
+          {comments.map((c) => (
+            <CommentItem
+              key={c.id}
+              c={c}
+              onReply={() => { setReplyTo(c.id); setReplyAuthor(c.author) }}
+            />
+          ))}
           {comments.length === 0 && <EmptyState text={t('discuss.noThreads')} />}
         </div>
 
@@ -220,15 +171,9 @@ export default function DiscussThread() {
 
 function CommentItem({
   c,
-  myZan,
-  likeCount,
-  onLike,
   onReply,
 }: {
   c: Comment
-  myZan: number
-  likeCount: number
-  onLike: () => void
   onReply: () => void
 }) {
   const { t } = useTranslation()
@@ -241,9 +186,7 @@ function CommentItem({
         </div>
         <SafeHtml html={c.content} className="comment-content" />
         <div className="comment-actions">
-          <button className={myZan > 0 ? 'liked' : ''} onClick={onLike}>
-            <ThumbsUp size={12} /> {likeCount}
-          </button>
+          <Zan type="BC" id={c.id} val={c.myZan ?? 0} cnt={c.likes} size={12} />
           <button onClick={onReply}>
             <MessageCircle size={12} /> {t('discuss.replyTo')}
           </button>

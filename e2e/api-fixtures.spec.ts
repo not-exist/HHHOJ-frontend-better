@@ -156,7 +156,7 @@ test.describe('real API mode with fixture envelopes', () => {
     await expect(page.getByText('Fixture School').first()).toBeVisible()
   })
 
-  test('problems page maps titles and estimates difficulty from ac/submit', async ({ page }) => {
+  test('problems page maps titles and acceptance rates from ac/submit', async ({ page }) => {
     await installUserscript(page)
     await installApiFixtures(page, {
       '/api/auth/me': { body: ME },
@@ -171,11 +171,10 @@ test.describe('real API mode with fixture envelopes', () => {
     await expect(page.getByRole('cell', { name: 'Fixture Alpha', exact: true })).toBeVisible()
     await expect(page.getByRole('cell', { name: 'Fixture Beta', exact: true })).toBeVisible()
 
-    // 40 / 100 = 40% -> difficulty 2 ("中等") by estimateDifficulty().
+    // 40 / 100 = 40%, rendered directly from ac_num/submit_num.
     const betaRow = page
       .getByRole('row')
       .filter({ has: page.getByRole('cell', { name: 'Fixture Beta', exact: true }) })
-    await expect(betaRow.locator('.diff-tag')).toHaveText('中等')
     await expect(betaRow.getByText('40%')).toBeVisible()
   })
 

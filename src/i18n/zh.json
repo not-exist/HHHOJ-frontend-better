@@ -79,7 +79,6 @@
   "problems": {
     "title": "题库",
     "searchPlaceholder": "搜索题号或标题…",
-    "difficulty": "难度",
     "tags": "标签",
     "myStatus": "我的状态",
     "statusAll": "全部",
@@ -87,9 +86,9 @@
     "statusTried": "未通过",
     "colId": "题号",
     "colTitle": "题目名称",
-    "colDifficulty": "难度",
     "colTags": "标签",
     "colAcceptance": "通过率",
+    "colZan": "赞/踩",
     "colState": "状态",
     "stateSolved": "已通过",
     "stateTried": "尝试过",
@@ -175,14 +174,6 @@
     "JudgingShort": "评测中",
     "PendingShort": "等待"
   },
-  "diff": {
-    "intro": "入门",
-    "easy": "简单",
-    "medium": "中等",
-    "hard": "较难",
-    "provincial": "省选",
-    "noi": "NOI"
-  },
   "contests": {
     "title": "比赛",
     "running": "进行中",
@@ -245,12 +236,9 @@
     "searchPlaceholder": "搜索讨论…",
     "colReplies": "回复",
     "colViews": "浏览",
-    "colLikes": "点赞",
     "pinned": "置顶",
     "author": "作者",
     "published": "发布于 {{time}}",
-    "like": "点赞",
-    "liked": "已赞",
     "comments": "条评论",
     "writeReply": "写下你的回复…",
     "send": "发送",
@@ -259,6 +247,12 @@
     "noThreads": "该节点暂无讨论",
     "backToDiscuss": "返回讨论区",
     "threadNotFound": "讨论不存在"
+  },
+  "zan": {
+    "up": "赞",
+    "down": "踩",
+    "multiHint": "可重复点击，普通用户最多 20 次",
+    "limit": "每个对象最多点 20 次"
   },
   "user": {
     "profile": "个人主页",

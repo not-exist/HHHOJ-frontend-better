@@ -79,7 +79,6 @@
   "problems": {
     "title": "Problem Set",
     "searchPlaceholder": "Search by ID or title…",
-    "difficulty": "Difficulty",
     "tags": "Tags",
     "myStatus": "My status",
     "statusAll": "All",
@@ -87,9 +86,9 @@
     "statusTried": "Attempted",
     "colId": "ID",
     "colTitle": "Title",
-    "colDifficulty": "Difficulty",
     "colTags": "Tags",
     "colAcceptance": "Acceptance",
+    "colZan": "Votes",
     "colState": "State",
     "stateSolved": "Solved",
     "stateTried": "Attempted",
@@ -175,14 +174,6 @@
     "JudgingShort": "Judging",
     "PendingShort": "Pending"
   },
-  "diff": {
-    "intro": "Intro",
-    "easy": "Easy",
-    "medium": "Medium",
-    "hard": "Hard",
-    "provincial": "Provincial",
-    "noi": "NOI"
-  },
   "contests": {
     "title": "Contests",
     "running": "Running",
@@ -245,12 +236,9 @@
     "searchPlaceholder": "Search threads…",
     "colReplies": "Replies",
     "colViews": "Views",
-    "colLikes": "Likes",
     "pinned": "Pinned",
     "author": "Author",
     "published": "Posted {{time}}",
-    "like": "Like",
-    "liked": "Liked",
     "comments": "comments",
     "writeReply": "Write a reply…",
     "send": "Send",
@@ -259,6 +247,12 @@
     "noThreads": "No threads in this node yet",
     "backToDiscuss": "Back to discussion",
     "threadNotFound": "Thread not found"
+  },
+  "zan": {
+    "up": "Like",
+    "down": "Dislike",
+    "multiHint": "Click again to add a vote; up to 20 for regular users",
+    "limit": "At most 20 votes per item"
   },
   "user": {
     "profile": "Profile",

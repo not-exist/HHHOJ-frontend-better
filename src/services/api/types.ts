@@ -10,6 +10,7 @@ import type {
   Thread,
   UserRole,
 } from '@/types'
+import type { ZanDelta, ZanTargetType } from '@/utils/zan'
 
 export interface SessionUser {
   username: string
@@ -131,7 +132,7 @@ export interface ApiClient {
   submissionStatus(ids: number[]): Promise<SubmissionStatus[]>
 
   postComment(blogId: number, content: string, replyTo?: number): Promise<void>
-  vote(type: 'B' | 'BC' | 'P' | 'C', id: number, delta: 1 | -1): Promise<ZanResult>
+  vote(type: ZanTargetType, id: number, delta: ZanDelta, contestId?: number): Promise<ZanResult>
 
   auth: {
     me(): Promise<SessionUser | null>

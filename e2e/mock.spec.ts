@@ -33,7 +33,8 @@ test.describe('mock data mode (?__mock=1)', () => {
       .getByRole('row')
       .filter({ has: page.getByRole('cell', { name: 'A + B 问题', exact: true }) })
     await expect(firstRow).toBeVisible()
-    await expect(firstRow.locator('.diff-tag')).toHaveText('入门')
+    // 12896 / 15203 = 84.8%, rounded to 85% by the acceptance column.
+    await expect(firstRow.getByText('85%')).toBeVisible()
 
     await expect(page.getByRole('cell', { name: '区间和查询', exact: true })).toBeVisible()
   })

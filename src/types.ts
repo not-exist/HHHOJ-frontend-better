@@ -1,6 +1,3 @@
-/** 题目难度档位（六档，参考主流 OJ） */
-export type Difficulty = 0 | 1 | 2 | 3 | 4 | 5
-
 export type Verdict =
   | 'Accepted'
   | 'WrongAnswer'
@@ -46,7 +43,6 @@ export interface Problem {
   id: number
   title: string
   titleEn: string
-  difficulty: Difficulty
   tags: string[]
   /** 通过人数 */
   solved: number
@@ -82,7 +78,12 @@ export interface Problem {
   myBestAcSubmissionId?: number | null
   /** 真实详情接口没有通过率信息时为 false */
   countsKnown?: boolean
-  difficultyKnown?: boolean
+  /** 赞数 */
+  zan?: number
+  /** 我的赞（-1/0/1，或多票时的累计值） */
+  myZan?: number
+  /** 该题是否允许多次赞 */
+  zanMulti?: boolean
 }
 
 export interface SubmissionRequirementItem {
@@ -151,6 +152,8 @@ export interface Contest {
   lastMin?: number
   zan?: number
   myZan?: number
+  /** 该比赛是否允许多次赞 */
+  zanMulti?: boolean
 }
 
 export interface StandingsCell {
@@ -233,5 +236,4 @@ export interface HomeData {
   problemRanklist: RanklistRow[]
 }
 
-export const DIFFICULTY_KEYS = ['intro', 'easy', 'medium', 'hard', 'provincial', 'noi'] as const
-export type DifficultyKey = (typeof DIFFICULTY_KEYS)[Difficulty]
+export type { ZanDelta, ZanTargetType } from '@/utils/zan'

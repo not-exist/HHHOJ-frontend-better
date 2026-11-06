@@ -87,25 +87,6 @@ describe('realApi.problems', () => {
     expect(problems[100].id).toBe(101)
     expect(problems[149].id).toBe(150)
     expect(problems[0].countsKnown).toBe(true)
-    expect(problems[0].difficultyKnown).toBe(true)
-  })
-
-  it('estimates difficulty from the acceptance rate', async () => {
-    const items = [
-      problemItem(1, 7, 10), // 70% -> 0
-      problemItem(2, 1, 2), // 50% -> 1
-      problemItem(3, 3, 10), // 30% -> 2
-      problemItem(4, 15, 100), // 15% -> 3
-      problemItem(5, 5, 100), // 5% -> 4
-      problemItem(6, 4, 100), // 4% -> 5
-      problemItem(7, 0, 100), // 0% -> 5
-      problemItem(8, 0, 0), // no submissions -> 0
-    ]
-    stubRoutes(() => ok({ items, total: items.length }))
-
-    const problems = await realApi.problems()
-
-    expect(problems.map((p) => p.difficulty)).toEqual([0, 1, 2, 3, 4, 5, 5, 0])
   })
 
   it('passes through my_best_ac_submission_id and defaults missing tags to []', async () => {
@@ -163,7 +144,6 @@ describe('realApi.problem', () => {
       contestId: 3,
       contestTitle: 'Weekly',
       countsKnown: false,
-      difficultyKnown: false,
     })
     expect(problem?.tags).toEqual(['math'])
     expect(problem?.submissionRequirement).toEqual([

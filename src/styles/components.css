@@ -413,23 +413,6 @@
   box-shadow: 0 0 12px var(--vg), inset 0 0 0 1px color-mix(in srgb, var(--vc) 35%, transparent);
 }
 
-.diff-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--dc);
-}
-.diff-tag::before {
-  content: '';
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  background: var(--dc);
-  box-shadow: 0 0 8px var(--dc);
-}
-
 .tag-chip {
   display: inline-block;
   padding: 0.1rem 0.55rem;
@@ -1023,3 +1006,15 @@ table.tbl {
 .toast svg {
   color: var(--primary);
 }
+
+/* ---------------- 赞 / 踩 ---------------- */
+.zan { display: inline-flex; align-items: center; gap: 0.1rem; vertical-align: middle; }
+.zan-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.55rem; height: 1.55rem; padding: 0; border: none; border-radius: 0.45rem; background: none; color: var(--text-3); cursor: pointer; transition: color var(--dur-fast), background var(--dur-fast); }
+.zan-btn:hover:not(:disabled) { color: var(--text-1); background: var(--glass-hover); }
+.zan-btn:disabled { opacity: 0.55; cursor: progress; }
+.zan-btn.up.on { color: var(--v-acced); }
+.zan-btn.down.on { color: var(--v-wrong); }
+.zan-count { min-width: 2.2ch; font-size: 0.8rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text-3); }
+.zan-count.positive { color: var(--v-acced); }
+.zan-count.negative { color: var(--v-wrong); }
+.zan-multi { margin-left: 0.15rem; font-size: 0.72rem; font-weight: 600; opacity: 0.85; }
