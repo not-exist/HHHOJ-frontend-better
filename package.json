@@ -14,7 +14,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "tsc src/utils/zan.ts --target ES2020 --module ESNext --moduleResolution bundler --outDir node_modules/.cache/zan-test --noEmit false --skipLibCheck && node --test tests/zan.test.mjs"
+    "test": "vitest run && pnpm test:zan",
+    "test:watch": "vitest",
+    "test:e2e": "pnpm build && playwright test",
+    "test:zan": "tsc src/utils/zan.ts --target ES2020 --module ESNext --moduleResolution bundler --outDir node_modules/.cache/zan-test --noEmit false --skipLibCheck && node --test tests/zan.test.mjs"
   },
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.0",
@@ -34,13 +37,16 @@
     "react-router-dom": "^6.30.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@types/blueimp-md5": "^2.18.2",
     "@types/katex": "^0.16.8",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.7.0",
+    "jsdom": "^25.0.1",
     "typescript": "~5.6.3",
     "vite": "^5.4.21",
-    "vite-plugin-monkey": "^5.0.9"
+    "vite-plugin-monkey": "^5.0.9",
+    "vitest": "^2.1.9"
   }
 }

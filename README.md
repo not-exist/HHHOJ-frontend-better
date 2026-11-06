@@ -8,16 +8,22 @@
 
 ## 安装
 
+推荐从 GitHub Releases 安装（带自动更新）：
+
+```
+https://github.com/not-exist/HHHOJ-frontend-better/releases/latest/download/hhhoj-twilight.user.js
+```
+
+打开上面的链接，Tampermonkey / Violentmonkey 会弹出安装页；装好后访问 `http://127.0.0.1:18080/`。
+
+本地构建装法：
+
 ```bash
 pnpm install
 pnpm build
 ```
 
-把 `dist/hhhoj-twilight.user.js` 拖进 Tampermonkey / Violentmonkey 的“添加新脚本”页面，保存后访问：
-
-```
-http://127.0.0.1:18080/
-```
+把 `dist/hhhoj-twilight.user.js` 拖进 Tampermonkey / Violentmonkey 的“添加新脚本”页面即可。
 
 生产域名需要先改 `vite.config.ts` 里的 `userscript.match`：
 
@@ -26,6 +32,27 @@ match: ['https://your-hhhoj-domain.example/*', 'http://127.0.0.1:18080/*', 'http
 ```
 
 > 仓库里的 `https://hhhoj.example.com/*` 只是占位符，直接安装不会匹配任何真实生产站。
+
+### 自动更新
+
+脚本元数据带 `@updateURL`（`hhhoj-twilight.meta.js`，只有几百字节）和 `@downloadURL`（完整脚本），版本号来自 `package.json`。篡改猴默认每天检查一次：
+
+- 全局频率：仪表盘 → 设置 → 更新 → “检查更新”（每天 / 每周 / 每月 / 从不）
+- 单脚本开关：脚本编辑器 → 设置 → 勾选“检查更新”
+- 手动检查：仪表盘 → 实用工具 → 检查用户脚本更新
+
+已安装旧版的用户，会在新版发布后的下一个检查周期自动收到更新提示。**发版时必须递增 `package.json` 的 `version`，否则不会触发更新。**
+
+### 发版
+
+```bash
+pnpm version patch --no-git-tag-version   # 或手改 package.json 的 version
+git commit -am "chore: release v1.0.1"
+git tag v1.0.1
+git push --follow-tags
+```
+
+推送 `v*` tag 后，`.github/workflows/release.yml` 会校验 tag 与 `package.json` 一致、构建，并把 `.user.js` 与 `.meta.js` 挂到 GitHub Release。`releases/latest/download/...` 始终指向最新正式版。
 
 ## 开发
 
@@ -45,6 +72,21 @@ http://127.0.0.1:18080/?__mock=0    # 关闭 mock
 ```
 
 mock 模式标记存在 `sessionStorage`，进入后当前标签页内继续生效。`src/main.tsx` 保留独立挂载入口，供不经过接管层的预览使用；`pnpm dev` 的根页面则是 vite-plugin-monkey 的脚本安装页，不是应用页面。
+
+## 测试
+
+```bash
+pnpm test          # Vitest 单测（jsdom）+ zan 投票语义测试（node:test，见 test:zan）
+pnpm test:e2e      # Playwright E2E（先构建 dist 产物）
+E2E_PORT=18081 pnpm test:e2e   # 本机 18080 被真实 HHHOJ 占用时换端口
+```
+
+- **单测**覆盖纯逻辑：`src/utils/*`、`src/services/md5.ts`、`src/services/api/http.ts`、`src/services/api/real.ts` 的字段映射，以及 `src/takeover.ts` 的路由门。
+- **E2E** 由 `e2e/server.mjs` 在 `127.0.0.1:18080` 提供最小原站壳，`e2e/helpers.ts` 用 `addInitScript` 注入构建产物并 stub GM API：
+  - `?__mock=1` 驱动内置 mock 数据，覆盖接管 UI；
+  - `page.route('**/api/**')` 返回 fixture，覆盖真实 API 映射链路；
+  - 另有表外路径回退（`/faq`）与逃生舱（`?native=1` / `?takeover=1`）用例。
+- CI 的 `unit` 与 `e2e` job 分别运行上述命令，E2E 失败时上传 Playwright 报告。
 
 ## 接管范围
 
