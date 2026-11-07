@@ -11,7 +11,7 @@ export default function Footer() {
             <Sparkles size={13} />
           </span>
           <div>
-            <b style={{ color: 'var(--text-2)' }}>TwilightOJ</b>
+            <b style={{ color: 'var(--text-2)' }}>HHHOJ</b>
             <div>{t('footer.slogan')}</div>
           </div>
         </div>

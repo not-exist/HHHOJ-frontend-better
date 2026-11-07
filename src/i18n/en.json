@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "TwilightOJ",
+    "appName": "HHHOJ",
     "tagline": "Illuminate Our Paths",
     "search": "Search",
     "submit": "Submit",
@@ -60,7 +60,7 @@
     "bannerTagline1": "Illuminate Our Paths — 点亮算法之路",
     "bannerTagline2": "From A + B to NOI, alongside {{n}} solvers",
     "bannerTagline3": "Tonight's last WA becomes tomorrow's AC",
-    "heroTitle": "TwilightOJ",
+    "heroTitle": "HHHOJ",
     "announcements": "Announcements",
     "hotProblems": "Trending problems",
     "upcomingContests": "Upcoming contests",
@@ -274,8 +274,8 @@
   },
   "auth": {
     "loginTitle": "Welcome back",
-    "loginSubtitle": "Sign in to TwilightOJ and continue the journey",
-    "registerTitle": "Join TwilightOJ",
+    "loginSubtitle": "Sign in to HHHOJ and continue the journey",
+    "registerTitle": "Join HHHOJ",
     "registerSubtitle": "Create an account and illuminate your path",
     "username": "Username",
     "usernamePlaceholder": "Username",
@@ -298,10 +298,10 @@
     "docs": "Docs",
     "github": "GitHub",
     "api": "API",
-    "style": "Twilight style guide",
+    "style": "Interface style guide",
     "ranklist": "Ranklist",
     "announcements": "Announcements",
-    "copyright": "© 2026 TwilightOJ · Built on the Twilight design language"
+    "copyright": "© 2026 HHHOJ · Interface ported from the Twilight design language"
   },
   "notfound": {
     "title": "404",

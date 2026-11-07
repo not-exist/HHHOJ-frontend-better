@@ -173,8 +173,8 @@ function mount(): void {
   void import('./bootstrap')
     .then(({ renderTwilightApp }) => renderTwilightApp(container))
     .catch((error) => {
-      console.error('[TwilightOJ] 挂载失败', error)
-      container.textContent = 'TwilightOJ 挂载失败，请刷新页面或使用 ?native=1 返回原站。'
+      console.error('[HHHOJ] 挂载失败', error)
+      container.textContent = 'HHHOJ 界面挂载失败，请刷新页面或使用 ?native=1 返回原站。'
     })
 }
 

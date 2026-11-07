@@ -61,7 +61,7 @@ export default function NavBar() {
             <span className="logo-mark">
               <Sparkles size={17} strokeWidth={2.2} />
             </span>
-            <span>TwilightOJ</span>
+            <span>HHHOJ</span>
           </Link>
 
           <div className="nav-links">

@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "TwilightOJ",
+    "appName": "HHHOJ",
     "tagline": "点亮算法之路",
     "search": "搜索",
     "submit": "提交",
@@ -60,7 +60,7 @@
     "bannerTagline1": "Illuminate Our Paths — 点亮算法之路",
     "bannerTagline2": "从 A + B 到 NOI，与 {{n}} 位选手同行",
     "bannerTagline3": "今晚的最后一个 WA，会变成明天的 AC",
-    "heroTitle": "TwilightOJ",
+    "heroTitle": "HHHOJ",
     "announcements": "公告栏",
     "hotProblems": "热门题目",
     "upcomingContests": "近期比赛",
@@ -274,8 +274,8 @@
   },
   "auth": {
     "loginTitle": "欢迎回来",
-    "loginSubtitle": "登录 TwilightOJ，继续你的旅程",
-    "registerTitle": "加入 TwilightOJ",
+    "loginSubtitle": "登录 HHHOJ，继续你的旅程",
+    "registerTitle": "加入 HHHOJ",
     "registerSubtitle": "创建账号，开始点亮算法之路",
     "username": "用户名",
     "usernamePlaceholder": "输入用户名",
@@ -298,10 +298,10 @@
     "docs": "文档",
     "github": "GitHub",
     "api": "API",
-    "style": "Twilight 风格指南",
+    "style": "界面风格指南",
     "ranklist": "排行榜",
     "announcements": "公告",
-    "copyright": "© 2026 TwilightOJ · 基于 Twilight 设计语言构建"
+    "copyright": "© 2026 HHHOJ · 界面移植自 Twilight 设计语言"
   },
   "notfound": {
     "title": "404",
