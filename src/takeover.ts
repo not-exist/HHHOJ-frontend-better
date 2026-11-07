@@ -180,10 +180,14 @@ function mount(): void {
 
 export function bootTakeover(): void {
   if (handleEscapeHatch()) return
-  if (isNativeMode()) return
-  if (!isTakeoverPath(location.pathname)) return
 
-  registerTakeoverMenu()
+  const native = isNativeMode()
+  // 菜单先于模式/路由判断注册：原站模式下脚本不再接管页面，
+  // 表外路径同理，此时菜单是页面上唯一可发现的模式切换入口。
+  registerTakeoverMenu(native)
+
+  if (native) return
+  if (!isTakeoverPath(location.pathname)) return
 
   whenDocumentElement(() => {
     installNativeGuard(document.documentElement)

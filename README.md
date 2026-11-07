@@ -125,6 +125,8 @@ E2E_PORT=18081 pnpm test:e2e   # 本机 18080 被真实 HHHOJ 占用时换端口
 
 原站模式标记存在 GM 存储 `toj.takeover.native`；没有 GM 存储时退回 `localStorage`。
 
+GM 菜单在每次页面加载时都会注册，原站模式与表外路径下同样可用：原站模式只提供“重新启用 TwilightOJ 接管”，接管态只提供“切换为 HHHOJ 原站界面”。因此切到原站后不需要手动改 URL，菜单里就能切回来。
+
 ## 接管层原理
 
 1. **document-start 路由门**：路径不在接管表内 → 直接退出。

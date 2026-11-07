@@ -11,8 +11,9 @@ Tampermonkey @run-at document-start
 src/userscript.ts
   └─ bootTakeover()
        ├─ ?native=1 / ?takeover=1 逃生舱（设置 GM 值并 reload）
-       ├─ isNativeMode() → 直接退出
-       ├─ 路由门：路径不在接管表 → 直接退出（原站完全不受影响）
+       ├─ 注册模式切换菜单（按 isNativeMode() 选择命令，先于任何提前退出）
+       ├─ isNativeMode() → 直接退出（原站页面不受影响，菜单仍可用）
+       ├─ 路由门：路径不在接管表 → 直接退出（原站完全不受影响，菜单仍可用）
        └─ whenDocumentElement()
             ├─ installNativeGuard()
             │    ├─ html[data-twilight]
@@ -100,6 +101,8 @@ TwilightOJ 的 CSS 是全局的（`:root`、`body`、`.glass` 等），因此接
 | `?takeover=1` | `toj.takeover.native = false` | 同上 |
 | GM 菜单 | 同上 | `location.reload()` |
 | 设置抽屉 | 同上 | `location.reload()` |
+
+GM 菜单在**每次页面加载**都会注册，且注册发生在原站模式判断与路由门之前：原站页面上本脚本不接管 DOM，菜单是页面内唯一可发现的恢复入口，因此不能随提前退出一起消失。菜单只注册当前模式下可执行的那一条——接管态是“切换为 HHHOJ 原站界面”，原站态是“重新启用 TwilightOJ 接管”。
 
 GM 存储通过 `vite-plugin-monkey` 的 `$` 客户端读写；在没有 GM API 的环境（独立预览、Playwright 注入）下退回 `localStorage['gm:toj.takeover.native']`。
 

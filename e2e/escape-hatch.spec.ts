@@ -18,3 +18,26 @@ test('?native=1 switches to the native site and ?takeover=1 restores the takeove
   await expect(page.locator('#root')).toHaveCount(0)
   await expect(page.getByRole('navigation', { name: 'main' })).toBeVisible()
 })
+
+test('native mode keeps the userscript menu command that restores the takeover', async ({ page }) => {
+  await installUserscript(page)
+  await page.goto('/?native=1')
+  await expectNativeFallback(page)
+
+  // The page is HHHOJ now, so the userscript menu is the only discoverable way back.
+  const names = await page.evaluate(
+    () => ((window as unknown as { __tojMenu?: { name: string }[] }).__tojMenu ?? []).map((cmd) => cmd.name),
+  )
+  expect(names).toEqual(['重新启用 TwilightOJ 接管'])
+
+  // Clicking it reloads into takeover mode. The reload kills the evaluate call itself.
+  await page
+    .evaluate(() => {
+      const menu = (window as unknown as { __tojMenu?: { name: string; fn: () => void }[] }).__tojMenu ?? []
+      menu[0]?.fn()
+    })
+    .catch(() => {})
+
+  await waitForTakeover(page)
+  await expect(page.getByRole('navigation', { name: 'main' })).toBeVisible()
+})

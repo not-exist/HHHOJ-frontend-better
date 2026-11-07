@@ -40,7 +40,13 @@ export async function installUserscript(page: Page, opts: InstallUserscriptOptio
         /* ignore */
       }
     }
-    gm.GM_registerMenuCommand = () => {}
+    // Records the commands so specs can assert which mode switch is reachable
+    // from the userscript menu (the only entry point on native pages).
+    const menu: { name: string; fn: () => void }[] = []
+    ;(window as unknown as { __tojMenu?: typeof menu }).__tojMenu = menu
+    gm.GM_registerMenuCommand = (name: string, fn: () => void) => {
+      menu.push({ name, fn })
+    }
     gm.unsafeWindow = window
   })
 
