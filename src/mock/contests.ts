@@ -8,8 +8,8 @@ const DAY = 24 * HOUR
 export const CONTESTS: Contest[] = [
   {
     id: 101,
-    title: 'Twilight Round #42（Div. 2）',
-    titleEn: 'Twilight Round #42 (Div. 2)',
+    title: 'HHHOJ Round #42（Div. 2）',
+    titleEn: 'HHHOJ Round #42 (Div. 2)',
     rule: 'ACM', phase: 'running',
     startAt: Date.now() - 1 * HOUR, endAt: Date.now() + 2 * HOUR,
     description: '本场为 Rated 比赛，赛制 ACM，时长 3 小时，共 6 题。祝好运！',
@@ -77,8 +77,8 @@ export const CONTESTS: Contest[] = [
   },
   {
     id: 106,
-    title: 'Twilight Round #41（Div. 1）',
-    titleEn: 'Twilight Round #41 (Div. 1)',
+    title: 'HHHOJ Round #41（Div. 1）',
+    titleEn: 'HHHOJ Round #41 (Div. 1)',
     rule: 'ACM', phase: 'finished',
     startAt: Date.now() - 2 * DAY - 3 * HOUR, endAt: Date.now() - 2 * DAY,
     description: '上一场 Div. 1 已经结束，可以查看榜单与题解。',

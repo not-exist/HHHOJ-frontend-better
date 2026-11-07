@@ -18,7 +18,7 @@ test.describe('mock data mode (?__mock=1)', () => {
     await expect(nav.getByRole('link', { name: '题库' })).toBeVisible()
 
     // Data comes from src/mock/news.ts via mockApi.home().
-    await expect(page.getByText('欢迎来到 TwilightOJ！新功能：实时主题色自定义')).toBeVisible()
+    await expect(page.getByText('欢迎来到 HHHOJ！新功能：实时主题色自定义')).toBeVisible()
     await expect(page.getByText('Nebula').first()).toBeVisible()
   })
 

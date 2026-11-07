@@ -41,7 +41,7 @@ function usePageTitle() {
     else if (/^\/user\/profile\//.test(pathname)) key = 'nav.profile'
     else if (/^\/login/.test(pathname)) key = 'nav.login'
     else if (/^\/register/.test(pathname)) key = 'nav.register'
-    document.title = `${t(key)} · TwilightOJ`
+    document.title = `${t(key)} · HHHOJ`
   }, [pathname, t])
 }
 

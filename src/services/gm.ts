@@ -50,12 +50,12 @@ export function setNativeMode(native: boolean): void {
 
 /**
  * 只注册当前模式下可执行的菜单命令。
- * 原站模式下页面不再由本脚本接管，这条菜单就是用户回到 TwilightOJ 的唯一入口，
+ * 原站模式下页面不再由本脚本接管，这条菜单就是用户回到接管界面的唯一入口，
  * 因此它必须在模式判断之前注册，不能因为脚本提前退出而消失。
  */
 export function registerTakeoverMenu(native: boolean): void {
   if (typeof GM_registerMenuCommand !== 'function') return
-  const label = native ? '重新启用 TwilightOJ 接管' : '切换为 HHHOJ 原站界面'
+  const label = native ? '重新启用 HHHOJ 界面接管' : '切换为 HHHOJ 原站界面'
   try {
     GM_registerMenuCommand(label, () => {
       setNativeMode(!native)

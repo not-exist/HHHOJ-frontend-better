@@ -7,7 +7,7 @@ export const USERS: OJUser[] = [
   {
     id: 1, name: 'Nebula', rating: 2861, acCount: 412, submissionCount: 1470,
     bio: '静水流深。Still waters run deep.', bioEn: 'Still waters run deep.',
-    joinedAt: '2023-03-12', school: 'Twilight Institute', ratingHistory: [1899, 1942, 2010, 1987, 2066, 2151, 2204, 2318, 2402, 2510, 2689, 2861],
+    joinedAt: '2023-03-12', school: 'HHHOJ', ratingHistory: [1899, 1942, 2010, 1987, 2066, 2151, 2204, 2318, 2402, 2510, 2689, 2861],
     avatarHue: 0,
   },
   {

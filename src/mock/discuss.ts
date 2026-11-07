@@ -11,10 +11,10 @@ function c(id: number, author: string, content: string, createdAt: string, likes
 export const THREADS: Thread[] = [
   {
     id: 1,
-    title: 'TwilightOJ 使用指南：从注册到 AC',
-    titleEn: 'TwilightOJ Guide: From Sign-up to AC',
+    title: 'HHHOJ 使用指南：从注册到 AC',
+    titleEn: 'HHHOJ Guide: From Sign-up to AC',
     node: 'notice', author: 'Nebula',
-    content: '欢迎来到 TwilightOJ！\n\n1. 在题库中挑选适合你难度的题目，从「入门」档开始是个不错的选择；\n2. 打开题目页阅读题面，右下角即可提交代码；\n3. 在「评测状态」页查看实时评测结果，点击任意一行可以查看代码与测试点详情；\n4. 卡关时先看讨论区题解节点，也可以发帖求助。\n\n祝各位 RP++，早日紫名！',
+    content: '欢迎来到 HHHOJ！\n\n1. 在题库中挑选适合你难度的题目，从「入门」档开始是个不错的选择；\n2. 打开题目页阅读题面，右下角即可提交代码；\n3. 在「评测状态」页查看实时评测结果，点击任意一行可以查看代码与测试点详情；\n4. 卡关时先看讨论区题解节点，也可以发帖求助。\n\n祝各位 RP++，早日紫名！',
     createdAt: '2026-10-20 10:00', views: 3120, likes: 128, pinned: true,
     comments: [
       c(1, 'Stelle', '教程很清晰，找到了第一道入门题！', '2026-10-20 10:21', 12,
@@ -113,7 +113,7 @@ export const THREADS: Thread[] = [
   },
   {
     id: 10,
-    title: '分享：把 VSCode 配色搬进 TwilightOJ（自定义主题色玩法）',
+    title: '分享：把 VSCode 配色搬进首页横幅（自定义主题色玩法）',
     titleEn: 'Share: Recreating VSCode palettes with the hue slider',
     node: 'share', author: 'Lumine',
     content: '设置抽屉里的色相滑块是全局生效的：255 是默认的暮色紫，200 接近青蓝极光，320 偏品红。我按不同氛围截了几张图，大家玩玩看！',

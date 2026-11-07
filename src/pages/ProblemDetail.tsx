@@ -265,7 +265,7 @@ export default function ProblemDetail() {
             <h2 className="card-title"><Send size={16} /> {t('problem.submitCode')}</h2>
             {!supported ? (
               <div className="empty" style={{ padding: '1.2rem' }}>
-                <p>这道题需要多文件或文本提交，TwilightOJ 接管页暂不支持。</p>
+                <p>这道题需要多文件或文本提交，接管页暂不支持。</p>
                 <a className="btn btn-ghost btn-sm" href={nativeHref}>
                   <ExternalLink size={13} /> 在原站提交
                 </a>

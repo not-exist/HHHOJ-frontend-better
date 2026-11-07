@@ -28,7 +28,7 @@ test('native mode keeps the userscript menu command that restores the takeover',
   const names = await page.evaluate(
     () => ((window as unknown as { __tojMenu?: { name: string }[] }).__tojMenu ?? []).map((cmd) => cmd.name),
   )
-  expect(names).toEqual(['重新启用 TwilightOJ 接管'])
+  expect(names).toEqual(['重新启用 HHHOJ 界面接管'])
 
   // Clicking it reloads into takeover mode. The reload kills the evaluate call itself.
   await page
